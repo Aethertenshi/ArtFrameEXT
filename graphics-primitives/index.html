@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Graphics & Animation - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Graphics \u0026 Animation";
+        var mkdocs_page_input_path = "graphics-primitives.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Graphics & Animation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#screen-window-management-graphicshelpercs">Screen &amp; Window Management (GraphicsHelper.cs)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-methods">Public Methods</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#configurewindow">ConfigureWindow</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#setframerate">SetFrameRate</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#getanchoroffset">GetAnchorOffset</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#easing-curves-easing-enum">Easing Curves (Easing Enum)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#easing-directions-direction-enum">Easing Directions (Direction Enum)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-tweener-class">The Tweener Class</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#properties">Properties</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#public-methods_1">Public Methods</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#custom-shader-effects-effectcs">Custom Shader Effects (Effect.cs)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-iarteffect-interface">The IArtEffect Interface</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-gaussianblureffect-class">The GaussianBlurEffect Class</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#public-properties">Public Properties</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Graphics & Tweens</li>
+      <li class="breadcrumb-item active">Graphics & Animation</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="graphics-tweens-effects">Graphics, Tweens &amp; Effects</h1>
+<p>This module outlines screen management APIs, the tween animation engine, and custom post-processing shaders. In accordance with keeping developer integration clean and simple, low-level drawing primitives and internal batching pipelines are handled automatically by the engine and omitted here.</p>
+<hr />
+<h2 id="screen-window-management-graphicshelpercs">Screen &amp; Window Management (<code>GraphicsHelper.cs</code>)</h2>
+<p>Use these static helpers to configure the window viewport, adjust render settings, and compute layout positions.</p>
+<h3 id="public-methods">Public Methods</h3>
+<h4 id="configurewindow"><code>ConfigureWindow</code></h4>
+<p>Configures the window viewport size, title, and fullscreen state. Call this inside your <code>IArt.Setup()</code> method.</p>
+<pre><code class="language-csharp">public static void ConfigureWindow(int width, int height, string title = &quot;ArtFramework&quot;, bool fullscreen = false)
+</code></pre>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">public void Setup()
+{
+    GraphicsHelper.ConfigureWindow(1920, 1080, &quot;My Interactive Art Project&quot;, fullscreen: true);
+}
+</code></pre>
+<h4 id="setframerate"><code>SetFrameRate</code></h4>
+<p>Sets the target rendering frame rate (draw ticks per second) for draw suppression. The application will suppress drawing if the delta time is below this target, saving GPU resources.</p>
+<pre><code class="language-csharp">public static void SetFrameRate(int fps)
+</code></pre>
+<h4 id="getanchoroffset"><code>GetAnchorOffset</code></h4>
+<p>Utility that calculates a spatial pixel offset vector based on a box's size and specified anchor alignments.</p>
+<pre><code class="language-csharp">public static Vector2 GetAnchorOffset(AnchorX anchorX, AnchorY anchorY, Vector2 size)
+</code></pre>
+<hr />
+<p>ArtFrame features an integrated, high-precision tween engine (<code>Tweener</code>) that lets you animate values smoothly using 11 different easing curves and three directions.</p>
+<h3 id="easing-curves-easing-enum">Easing Curves (<code>Easing</code> Enum)</h3>
+<ul>
+<li><code>Linear</code> — Consistent, uniform speed.</li>
+<li><code>Quadratic</code>, <code>Cubic</code>, <code>Quartic</code>, <code>Quintic</code> — Power-based acceleration.</li>
+<li><code>Sine</code> — Smooth acceleration based on sinusoidal waves.</li>
+<li><code>Exponential</code> — Exponential ramp.</li>
+<li><code>Circular</code> — Acceleration based on circular geometry.</li>
+<li><code>Back</code> — Overshoots the destination slightly before pulling back.</li>
+<li><code>Elastic</code> — Bounces back and forth like a rubber band around the target.</li>
+<li><code>Fluid</code> — Custom high-order smooth deceleration curve.</li>
+</ul>
+<h3 id="easing-directions-direction-enum">Easing Directions (<code>Direction</code> Enum)</h3>
+<ul>
+<li><code>In</code> — Easing is applied at the beginning of the transition.</li>
+<li><code>Out</code> — Easing is applied at the end of the transition.</li>
+<li><code>InOut</code> — Easing is applied at both the beginning and the end.</li>
+</ul>
+<hr />
+<h3 id="the-tweener-class">The <code>Tweener</code> Class</h3>
+<p>A <code>Tweener</code> handles the mathematical state of an active animation. Once added to the tween pool, it updates automatically on every frame.</p>
+<h4 id="properties">Properties</h4>
+<ul>
+<li><code>IsPlaying</code> (<code>bool</code>): Returns <code>true</code> if the animation is currently running.</li>
+<li><code>CurrentValue</code> (<code>float</code>): The current animated value, ready to be applied.</li>
+</ul>
+<h4 id="public-methods_1">Public Methods</h4>
+<h5 id="start"><code>Start</code></h5>
+<p>Starts a new tween animation.</p>
+<pre><code class="language-csharp">public void Start(float duration, float startValue, float endValue, Easing easing = Easing.Linear, Direction direction = Direction.In)
+</code></pre>
+<ul>
+<li><strong>Parameters:</strong><ul>
+<li><code>duration</code>: Duration of the animation in seconds.</li>
+<li><code>startValue</code>: The value to animate from.</li>
+<li><code>endValue</code>: The value to animate to.</li>
+<li><code>easing</code>: The mathematical curve to apply.</li>
+<li><code>direction</code>: The easing direction behavior.</li>
+</ul>
+</li>
+</ul>
+<h5 id="restart"><code>Restart</code></h5>
+<p>Starts a new animation <strong>using the current value of the tweener as the starting point</strong>. This prevents visual snapping when changing targets mid-transition.</p>
+<pre><code class="language-csharp">public void Restart(float duration, float targetValue, Easing easing = Easing.Linear, Direction direction = Direction.In)
+</code></pre>
+<h5 id="setvalue"><code>SetValue</code></h5>
+<p>Instantly snaps the tweener to the specified value and halts any active animation.</p>
+<pre><code class="language-csharp">public void SetValue(float value)
+</code></pre>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">using ArtFrame;
+using ArtFrame.Easings;
+
+public class TweenDemo : IArt
+{
+    private Tweener _fadeTween;
+    private Frame _myPanel;
+
+    public void Setup()
+    {
+        _myPanel = new Frame { size = UDim2.FromScale(0.3f, 0.3f) };
+        SpriteHelper.Add(_myPanel);
+
+        // 1. Create and register a new Tweener to the global update pool
+        _fadeTween = TweenHelper.AddTween(new Tweener());
+
+        // 2. Start animating from 0% opacity to 100% opacity over 0.5s
+        _fadeTween.Start(0.5f, 0f, 1f, Easing.Cubic, Direction.Out);
+    }
+
+    public void Update(float dt)
+    {
+        // Apply the active animated value directly to the UI component
+        _myPanel.alpha = _fadeTween.CurrentValue;
+
+        // Trigger a clean redirection on mouse click without snapping
+        if (InputHelper.Mouse.LeftClicked())
+        {
+            _fadeTween.Restart(0.4f, 0f, Easing.Sine, Direction.In);
+        }
+    }
+}
+</code></pre>
+<hr />
+<h2 id="custom-shader-effects-effectcs">Custom Shader Effects (<code>Effect.cs</code>)</h2>
+<p>ArtFrame provides an interface and wrapper classes to load custom pixel shaders and apply two-pass post-processing filter sweeps to UI containers.</p>
+<h3 id="the-iarteffect-interface">The <code>IArtEffect</code> Interface</h3>
+<p>Represents a custom shader effect wrapper.</p>
+<pre><code class="language-csharp">public interface IArtEffect : IDisposable
+{
+    void DrawEffect(Texture2D content, Rectangle destination, Color tint);
+}
+</code></pre>
+<h3 id="the-gaussianblureffect-class">The <code>GaussianBlurEffect</code> Class</h3>
+<p>A production-ready two-pass Gaussian blur filter. It performs horizontal and vertical blur sweeps sequentially inside custom render targets.</p>
+<h4 id="public-properties">Public Properties</h4>
+<ul>
+<li>
+<p><code>BlurAmount</code> (<code>float</code>): The intensity of the blur (defaults to <code>2f</code>). Higher values produce stronger blurs.</p>
+</li>
+<li>
+<p><strong>Example Usage (Applied via an <code>EffectFrame</code> container):</strong></p>
+</li>
+</ul>
+<pre><code class="language-csharp">using ArtFrame;
+using ArtFrame.Effects;
+using ArtFrame.UserInterface;
+
+public class ShaderDemo : IArt
+{
+    private EffectFrame _blurContainer;
+    private GaussianBlurEffect _blurShader;
+
+    public void Setup()
+    {
+        // 1. Instantiate the Blur wrapper
+        _blurShader = new GaussianBlurEffect { BlurAmount = 4.5f };
+
+        // 2. Create the container frame and assign the shader
+        _blurContainer = new EffectFrame
+        {
+            size = UDim2.FromScale(0.5f, 0.5f),
+            Effect = _blurShader // Inject the custom shader
+        };
+
+        // 3. Add child elements (everything inside this container will be blurred!)
+        _blurContainer.children.Add(new TextFrame { text = &quot;This text is blurred!&quot; });
+
+        SpriteHelper.Add(_blurContainer);
+    }
+}
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../input-helpers/" class="btn btn-neutral float-left" title="Input & File Drop"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../fonts-rendering/" class="btn btn-neutral float-right" title="MTSDF Font Rendering">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../input-helpers/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../fonts-rendering/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

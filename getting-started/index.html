@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Getting Started - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Getting Started";
+        var mkdocs_page_input_path = "getting-started.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Getting Started</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-net-runtime">1. .NET Runtime</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-native-dynamic-link-libraries-dlls">2. Native Dynamic Link Libraries (DLLs)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-font-shader-atlases">3. Font Shader &amp; Atlases</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-by-step-setup-guide">Step-by-Step Setup Guide</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-create-a-console-application">Step 1: Create a Console Application</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-reference-art2framework">Step 2: Reference Art2Framework</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-copy-native-binaries">Step 3: Copy Native Binaries</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-4-write-your-first-application">Step 4: Write Your First Application</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-5-run-the-project">Step 5: Run the Project</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="getting-started-with-artframe">Getting Started with ArtFrame</h1>
+<p>To build applications with the ArtFrame framework, you should follow this guide to prepare your environment and create your first creative sketch. We skip standard language guides and jump directly into the technical setup.</p>
+<hr />
+<h2 id="prerequisites">Prerequisites</h2>
+<p>To compile and run an ArtFrame application, your system requires the following components:</p>
+<h3 id="1-net-runtime">1. .NET Runtime</h3>
+<ul>
+<li><strong>You need .NET SDK version 8.0 or newer to start.</strong> Older versions (.NET 6.0, 7.0 or .NET Framework) are not supported.</li>
+<li>You can verify your version by running:</li>
+</ul>
+<pre><code class="language-bash">dotnet --version
+</code></pre>
+<h3 id="2-native-dynamic-link-libraries-dlls">2. Native Dynamic Link Libraries (DLLs)</h3>
+<p>ArtFrame relies on low-level native bindings. The following compiled libraries must reside in your application's output execution directory (where the <code>.exe</code> is generated, or loaded in the system path):
+*   <code>SDL3.dll</code> — Windowing, input handling, and drag-and-drop.
+*   <code>FNA3D.dll</code> — Core graphics wrapper and rendering drivers.
+*   <code>bass.dll</code> — Core audio decoding and playback engine.
+*   <code>bass_fx.dll</code> — Pitch-shifting, tempo-shifting, and advanced audio effect filters.</p>
+<h3 id="3-font-shader-atlases">3. Font Shader &amp; Atlases</h3>
+<p>Because ArtFrame utilizes multi-channel distance field rendering for pixel-perfect fonts, you must compile the HLSL shader code:
+*   A compiled HLSL font shader must be located at <code>shaders/atlas.fxb</code>.
+*   Font assets must be generated in JSON + PNG atlas format using tools like <code>msdf-atlas-gen</code>.</p>
+<hr />
+<h2 id="step-by-step-setup-guide">Step-by-Step Setup Guide</h2>
+<p>Follow these steps to create and run your first ArtFrame application:</p>
+<h3 id="step-1-create-a-console-application">Step 1: Create a Console Application</h3>
+<p>Create a new C# console project using the .NET CLI:</p>
+<pre><code class="language-bash">dotnet new console -n MyArtFrameProject
+cd MyArtFrameProject
+</code></pre>
+<h3 id="step-2-reference-art2framework">Step 2: Reference Art2Framework</h3>
+<p>Reference the <code>Art2Framework</code> library. Add the project reference or compile the DLL and add it to your project references in <code>MyArtFrameProject.csproj</code>:</p>
+<pre><code class="language-xml">&lt;ItemGroup&gt;
+  &lt;ProjectReference Include=&quot;..\Art2Framework\Art2Framework.csproj&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<h3 id="step-3-copy-native-binaries">Step 3: Copy Native Binaries</h3>
+<p>Ensure that <code>SDL3.dll</code>, <code>FNA3D.dll</code>, <code>bass.dll</code>, and <code>bass_fx.dll</code> are copied to the build output directory (<code>bin/Debug/net8.0/</code>). You can configure this in your project file to automate the copy:</p>
+<pre><code class="language-xml">&lt;ItemGroup&gt;
+  &lt;None Update=&quot;SDL3.dll;FNA3D.dll;bass.dll;bass_fx.dll&quot;&gt;
+    &lt;CopyToOutputDirectory&gt;PreserveNewest&lt;/CopyToOutputDirectory&gt;
+  &lt;/None&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<h3 id="step-4-write-your-first-application">Step 4: Write Your First Application</h3>
+<p>Open <code>Program.cs</code> and replace its contents with the code below. This sets up a window, loads a font, constructs a text element, and registers it to the rendering pipeline:</p>
+<pre><code class="language-csharp">using ArtFrame;
+using ArtFrame.ArtTypes;
+using ArtFrame.UserInterface;
+
+namespace MyProject
+{
+    public class SimpleSketch : IArt
+    {
+        private TextFrame _titleLabel;
+
+        public void Setup()
+        {
+            // 1. Configure the game window (Width, Height, Title)
+            GraphicsHelper.ConfigureWindow(1280, 720, &quot;ArtFrame - Hello World&quot;);
+
+            // 2. Load the Multi-channel Signed Distance Field Font
+            FontHelper.LoadAtlasFont(&quot;main&quot;, &quot;fonts/main.json&quot;, &quot;fonts/main.png&quot;);
+
+            // 3. Initialize and position a declarative Text Element
+            _titleLabel = new TextFrame
+            {
+                fontName = &quot;main&quot;,
+                text = &quot;Hello, ArtFrame!&quot;,
+                scale = 3.5f,
+                color = Color.White,
+                position = UDim2.FromScale(0.5f, 0.5f), // Center of the screen
+                anchorX = AnchorX.Center,               // Pivot alignment horizontally
+                anchorY = AnchorY.Center                // Pivot alignment vertically
+            };
+
+            // 4. Register the component to the engine's active draw pool
+            SpriteHelper.Add(_titleLabel);
+        }
+
+        public void Update(float dt)
+        {
+            // Custom update logic goes here...
+        }
+
+        public void ManualDraw(float dt)
+        {
+            // Optional direct low-level drawing...
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Kick off the framework lifecycle
+            Engine.Run&lt;SimpleSketch&gt;();
+        }
+    }
+}
+</code></pre>
+<h3 id="step-5-run-the-project">Step 5: Run the Project</h3>
+<p>Build and run the project:</p>
+<pre><code class="language-bash">dotnet run
+</code></pre>
+<p>You will see a window appear with the text "Hello, ArtFrame!" perfectly centered, rendering at high-performance vector quality.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../engine/" class="btn btn-neutral float-right" title="Core Engine">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../engine/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

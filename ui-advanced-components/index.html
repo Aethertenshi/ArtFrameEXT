@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Advanced UI Components - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Advanced UI Components";
+        var mkdocs_page_input_path = "ui-advanced-components.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Advanced UI Components</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-dynamic-slider-sliderframe">1. Dynamic Slider (SliderFrame)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#features">Features</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties">Public Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#events">Events</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-scrollable-viewport-scrollingframe">2. Scrollable Viewport (ScrollingFrame)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties_1">Public Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#technical-concept-scissor-clipping">Technical Concept: Scissor Clipping</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-keyboard-input-box-textboxframe">3. Keyboard Input Box (TextBoxFrame)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#features_1">Features</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties_2">Public Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#events_1">Events</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-shader-canvas-effectframe">4. Shader Canvas (EffectFrame)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties_3">Public Properties</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-ring-primitive-circleframe">5. Ring Primitive (CircleFrame)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties_4">Public Properties</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-heartbeat-trail-emitter-trail">6. Heartbeat Trail Emitter (Trail)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#mathematical-definition">Mathematical Definition</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties_5">Public Properties</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">User Interface System</li>
+      <li class="breadcrumb-item active">Advanced UI Components</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="advanced-ui-components">Advanced UI Components</h1>
+<p>This section covers interactive, dynamic, and render-target-based components in the ArtFrame User Interface suite. These elements handle sophisticated rendering pipelines, scissor clipping, shader post-processing, and rich keyboard/mouse interactions.</p>
+<hr />
+<h2 id="1-dynamic-slider-sliderframe">1. Dynamic Slider (<code>SliderFrame</code>)</h2>
+<p><code>SliderFrame</code> provides an interactive slider containing a text label, value readout, track filled segment, White/Accent accent handle, and an automated reset button.</p>
+<pre><code>  Volume 
+  80%     [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░] (#)
+          ▲ Track Fill                     ▲ Handle   ▲ Reset
+</code></pre>
+<h3 id="features">Features</h3>
+<ul>
+<li><strong>Constant Layout Widths:</strong> To prevent mouse positioning spikes mid-drag, the track and reset button columns maintain a fixed layout, regardless of whether the reset button is currently visible.</li>
+<li><strong>Interpolated Reset:</strong> Clicking the reset button (<code>#</code> glyph) triggers a smooth <code>_resetTween</code> (using <code>Easing.Cubic</code>, <code>Direction.Out</code>) to animate the slider back to <code>defaultValue</code> without visual snapping.</li>
+</ul>
+<h3 id="public-properties">Public Properties</h3>
+<ul>
+<li><code>minValue</code> / <code>maxValue</code> (<code>float</code>): The boundaries of the slider range.</li>
+<li><code>defaultValue</code> (<code>float</code>): The default value (clicks to return here).</li>
+<li><code>currentValue</code> (<code>float</code>): The active value, clamped between min and max.</li>
+<li><code>valueFormat</code> (<code>string</code>): Formatting string for the readout label (e.g. <code>"0"</code> for integers, <code>"0.##"</code> for decimals).</li>
+<li><code>title</code> (<code>string</code>): Text label displayed on the left column.</li>
+<li><code>textWidth</code> (<code>float</code>): Fixed layout width reserved for the text column.</li>
+<li><code>trackColor</code> / <code>fillColor</code> / <code>handleColor</code> (<code>Color</code>): Styling colors.</li>
+<li><code>handleWidth</code> (<code>float</code>): Pixel thickness of the handle cap.</li>
+</ul>
+<h3 id="events">Events</h3>
+<ul>
+<li><code>onSlide</code> (<code>Action&lt;SliderFrame&gt;</code>): Invoked continuously on every frame the slider value changes during dragging (ideal for spawning audio tick sounds).</li>
+<li><code>onValueChanges</code> (<code>Action&lt;SliderFrame&gt;</code>): Invoked once when dragging is released, or when the automated reset tween completes.</li>
+</ul>
+<hr />
+<h2 id="2-scrollable-viewport-scrollingframe">2. Scrollable Viewport (<code>ScrollingFrame</code>)</h2>
+<p>A scrollable container supporting mouse-wheel input, smooth momentum scroll interpolation, and scissor clipping to hide overflow.</p>
+<h3 id="public-properties_1">Public Properties</h3>
+<ul>
+<li><code>scrollDirection</code> (<code>Axis</code>): Scrolling axis (<code>Axis.Vertical</code> or <code>Axis.Horizontal</code>).</li>
+<li><code>clipMode</code> (<code>ClipMode</code>):<ul>
+<li><code>ClipMode.None</code>: Children render beyond the bounding box.</li>
+<li><code>ClipMode.Clip</code>: Activates custom scissor clipping. Children are clipped to the viewport boundaries.</li>
+</ul>
+</li>
+<li><code>scrollSensitivity</code> (<code>float</code>): Pixels scrolled per mouse-wheel tick.</li>
+<li><code>smoothing</code> (<code>float</code>): Scroll momentum smoothing. A value of <code>0</code> makes scroll inputs instant. Higher values (e.g. <code>8f</code>) smoothly interpolate scrolling.</li>
+<li><code>showScrollbar</code> (<code>bool</code>): Toggle scrollbar visibility.</li>
+<li><code>scrollbarWidth</code> / <code>scrollbarColor</code> / <code>scrollbarTrackColor</code> (<code>Color</code>): Scrollbar visuals.</li>
+</ul>
+<h3 id="technical-concept-scissor-clipping">Technical Concept: Scissor Clipping</h3>
+<p>When <code>clipMode</code> is set to <code>ClipMode.Clip</code>, the framework manages graphics device states:
+1.  It calculates the absolute viewport rectangle (<code>topLeft</code> to <code>resolvedSize</code>).
+2.  It sets <code>ScissorTestEnable = true</code> using a customized rasterizer state (<code>_scissorState</code>).
+3.  To ensure nested scrollboxes clip correctly, the current scissor bounding box is intersected with the parent's:
+    $$\text{Active Scissor} = \text{Viewport Scissor} \cap \text{Active Device Scissor}$$
+4.  Children are drawn inside this active boundary, after which standard rasterizer states are restored.</p>
+<hr />
+<h2 id="3-keyboard-input-box-textboxframe">3. Keyboard Input Box (<code>TextBoxFrame</code>)</h2>
+<p><code>TextBoxFrame</code> is an interactive text input element. It handles character capturing, caret blinking, arrow navigation, backspaces, and key-repeat delays.</p>
+<h3 id="features_1">Features</h3>
+<ul>
+<li><strong>Native IME &amp; Layout Capturing:</strong> Hooks directly into SDL3 text events via <code>RegisterTextInput</code>. This automatically handles international keyboard layouts, CapsLock, and Shift combinations.</li>
+<li><strong>Key Repeat Engine:</strong> Polling key states can cause actions like Backspace to repeat too fast. <code>TextBoxFrame</code> incorporates a repeat controller:<ul>
+<li><code>RepeatDelay</code>: <code>0.40s</code> delay before repeating starts.</li>
+<li><code>RepeatRate</code>: <code>0.05s</code> interval between repeats while a key is held.</li>
+</ul>
+</li>
+</ul>
+<h3 id="public-properties_2">Public Properties</h3>
+<ul>
+<li><code>currentText</code> (<code>string</code>): The active text content inside the box.</li>
+<li><code>placeholder</code> (<code>string</code>): Placeholder text displayed when the box is empty and unfocused.</li>
+<li><code>maxLength</code> (<code>int</code>): Maximum character limit (-1 represents unlimited).</li>
+<li><code>padding</code> (<code>float</code>): Inner horizontal and vertical pixel padding.</li>
+<li><code>isFocused</code> (<code>bool</code>): Read-only focus state.</li>
+<li><code>cursorBlinkRate</code> (<code>float</code>): Caret blink interval in seconds (defaults to <code>0.53s</code>).</li>
+</ul>
+<h3 id="events_1">Events</h3>
+<ul>
+<li><code>onEnter</code> (<code>Action&lt;TextBoxFrame&gt;</code>): Invoked when the user presses the Enter key. Typically defocuses the box.</li>
+<li><code>onFocusLost</code> (<code>Action&lt;TextBoxFrame&gt;</code>): Invoked when the element loses focus.</li>
+<li><code>onTextChanged</code> (<code>Action&lt;TextBoxFrame&gt;</code>): Invoked on every key entry or character deletion.</li>
+</ul>
+<hr />
+<h2 id="4-shader-canvas-effectframe">4. Shader Canvas (<code>EffectFrame</code>)</h2>
+<p>An advanced container that redirects the rendering of all its nested children into an offscreen buffer target (<code>RenderTarget2D</code>), applies a custom pixel shader, and renders the final composite on the screen.</p>
+<h3 id="public-properties_3">Public Properties</h3>
+<ul>
+<li><code>Effect</code> (<code>IArtEffect</code>): The custom shader effect instance to apply (e.g. <code>GaussianBlurEffect</code>).</li>
+<li><code>BypassEffect</code> (<code>bool</code>):<ul>
+<li>If <code>false</code>, children are drawn to the offscreen buffer to apply the shader.</li>
+<li>If <code>true</code>, <strong>shading is completely bypassed</strong>. Children render directly to the screen (perfect for toggling off heavy blurs or motion blurs to preserve readability).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="5-ring-primitive-circleframe">5. Ring Primitive (<code>CircleFrame</code>)</h2>
+<p>Draws solid circles, hollow rings, or arc pie segments by generating mathematical vertex coordinates.</p>
+<h3 id="public-properties_4">Public Properties</h3>
+<ul>
+<li><code>innerRadius</code> (<code>float</code>): Set to <code>0</code> for a solid circle. Set to a positive pixel value for a hollow ring.</li>
+<li><code>startAngle</code> (<code>float</code>): Starting angle in degrees (clockwise).</li>
+<li><code>endAngle</code> (<code>float</code>): Ending angle in degrees. Animating this property creates clean pie-charts or progress spinners.</li>
+<li><code>segments</code> (<code>int</code>): The number of triangle segments used to draw the circular edge (defaults to <code>64</code>).</li>
+</ul>
+<hr />
+<h2 id="6-heartbeat-trail-emitter-trail">6. Heartbeat Trail Emitter (<code>Trail</code>)</h2>
+<p>A specialized mathematical component that plots a parametric heart curve over time, enqueues coordinates into a FIFO queue, and draws a fading trail.</p>
+<h3 id="mathematical-definition">Mathematical Definition</h3>
+<p>The trail coordinates are calculated from parametric heart equations:
+$$x(\theta) = 16 \sin^3(\theta)$$
+$$y(\theta) = 13 \cos(\theta) - 5 \cos(2\theta) - 2 \cos(3\theta) - \cos(4\theta)$$
+The coordinate $y$ is inverted to align with the screen coordinate space (where $Y$ increases downwards).</p>
+<h3 id="public-properties_5">Public Properties</h3>
+<ul>
+<li><code>LoopDuration</code> (<code>float</code>): The time in seconds taken to complete one full heart loop.</li>
+<li><code>Persistence</code> (<code>float</code>): The lifetime in seconds of trail segments before they fade out completely.</li>
+<li><code>Scale</code> (<code>float</code>): The physical size multiplier of the heart path.</li>
+<li><code>trailColor</code> (<code>Color</code>): The color of the trail. The alpha of individual segments fades out relative to their age.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../ui-components/" class="btn btn-neutral float-left" title="UI Basics (Frames & Buttons)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../ui-modifiers/" class="btn btn-neutral float-right" title="Layout Modifiers">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../ui-components/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../ui-modifiers/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

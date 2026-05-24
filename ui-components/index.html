@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>UI Basics (Frames & Buttons) - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "UI Basics (Frames \u0026 Buttons)";
+        var mkdocs_page_input_path = "ui-components.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">UI Basics (Frames & Buttons)</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-bounding-container-frame">1. Bounding Container (Frame)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#properties">Properties</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-image-container-imageframe">2. Image Container (ImageFrame)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_1">Properties</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-formatted-text-textframe">3. Formatted Text (TextFrame)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_2">Properties</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#background-panel-options">Background Panel Options</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-solid-button-button">4. Solid Button (Button)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#properties-state">Properties &amp; State</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#events">Events</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-textured-button-imagebutton">5. Textured Button (ImageButton)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_3">Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#events_1">Events</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">User Interface System</li>
+      <li class="breadcrumb-item active">UI Basics (Frames & Buttons)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ui-basics-frames-buttons">UI Basics: Frames &amp; Buttons</h1>
+<p>ArtFrame features a declarative, Roblox- and CSS-inspired User Interface (UI) system built on the base <code>ArtObject</code> class. All components support hierarchy nesting, relative scaling + absolute pixel positioning (<code>UDim2</code>), and anchor alignments.</p>
+<hr />
+<h2 id="1-bounding-container-frame">1. Bounding Container (<code>Frame</code>)</h2>
+<p>The <code>Frame</code> is a solid rectangular component. It can render a background color or serve as an invisible layout folder containing child nodes.</p>
+<h3 id="properties">Properties</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Property</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>color</code></td>
+<td style="text-align: left;"><code>Color</code></td>
+<td style="text-align: left;">The background color tint.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>alpha</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">The opacity factor (0.0 to 1.0).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>rotation</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Rotation in degrees around its anchor pivot.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>children</code></td>
+<td style="text-align: left;"><code>List&lt;ArtObject&gt;</code></td>
+<td style="text-align: left;">The nested list of child elements.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>modifiers</code></td>
+<td style="text-align: left;"><code>List&lt;IFrameModifier&gt;</code></td>
+<td style="text-align: left;">Layout engines (like <code>ListLayout</code>) applied automatically to position children.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>onUpdate</code></td>
+<td style="text-align: left;"><code>Action&lt;Frame, float&gt;</code></td>
+<td style="text-align: left;">Delegate invoked on every logic tick.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">var mainPanel = new Frame
+{
+    position = UDim2.FromScale(0.1f, 0.1f),
+    size = UDim2.FromScale(0.8f, 0.8f),
+    color = new Color(&quot;#1A1A24&quot;),
+    anchorX = AnchorX.Left,
+    anchorY = AnchorY.Top
+};
+SpriteHelper.Add(mainPanel);
+</code></pre>
+<hr />
+<h2 id="2-image-container-imageframe">2. Image Container (<code>ImageFrame</code>)</h2>
+<p>Renders a texture asset with advanced aspect-ratio fitting controls.</p>
+<h3 id="properties_1">Properties</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Property</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>texture</code></td>
+<td style="text-align: left;"><code>Image</code></td>
+<td style="text-align: left;">The image texture, loaded via <code>SpriteHelper.LoadImage</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>fit</code></td>
+<td style="text-align: left;"><code>ObjectFit</code></td>
+<td style="text-align: left;">The aspect-ratio fit mode: <code>Fill</code> (stretch to fit), <code>Contain</code> (scale uniform to fit inside), <code>Cover</code> (scale uniform to crop cover), or <code>None</code> (native size centered).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>color</code></td>
+<td style="text-align: left;"><code>Color</code></td>
+<td style="text-align: left;">Color tint.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>alpha</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Opacity (0.0 to 1.0).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>rotation</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Rotation in degrees.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>children</code></td>
+<td style="text-align: left;"><code>List&lt;ArtObject&gt;</code></td>
+<td style="text-align: left;">Nested child elements.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>onUpdate</code></td>
+<td style="text-align: left;"><code>Action&lt;ImageFrame, float&gt;</code></td>
+<td style="text-align: left;">Logic tick callback.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">SpriteHelper.LoadImage(&quot;logo&quot;, &quot;images/logo.png&quot;);
+
+var logoImage = new ImageFrame
+{
+    texture = SpriteHelper.LoadImage(&quot;logo&quot;),
+    fit = ObjectFit.Contain,
+    size = UDim2.FromOffset(200, 200),
+    position = new UDim2(0.5f, 0, 0f, 20),
+    anchorX = AnchorX.Center,
+    anchorY = AnchorY.Top
+};
+</code></pre>
+<hr />
+<h2 id="3-formatted-text-textframe">3. Formatted Text (<code>TextFrame</code>)</h2>
+<p>Renders multi-channel signed distance field (MTSDF) text. It includes options for background panels, padding, and borders.</p>
+<h3 id="properties_2">Properties</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Property</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>fontName</code></td>
+<td style="text-align: left;"><code>string</code></td>
+<td style="text-align: left;">The registered name of the MTSDF font to use.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>text</code></td>
+<td style="text-align: left;"><code>string</code></td>
+<td style="text-align: left;">The text string to display. Supports multi-line text split by <code>\n</code> escape sequences.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>scale</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Font size multiplier.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>color</code></td>
+<td style="text-align: left;"><code>Color</code></td>
+<td style="text-align: left;">Text color.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>alpha</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Master opacity.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>rotation</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Rotation in degrees.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>textAnchorX</code></td>
+<td style="text-align: left;"><code>AnchorX</code></td>
+<td style="text-align: left;">Horizontal text alignment inside the bounding box.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>textAnchorY</code></td>
+<td style="text-align: left;"><code>AnchorY</code></td>
+<td style="text-align: left;">Vertical text alignment inside the bounding box.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>strokeWidth</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Outline stroke thickness (defaults to <code>0f</code> for no stroke).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>strokeColor</code></td>
+<td style="text-align: left;"><code>Color?</code></td>
+<td style="text-align: left;">Color of the outline stroke.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="background-panel-options">Background Panel Options</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Option</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>backgroundColor</code></td>
+<td style="text-align: left;"><code>Color?</code></td>
+<td style="text-align: left;">Draws a solid background behind the text.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>backgroundAlpha</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Opacity of the background panel.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>backgroundPadding</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Pixel padding between the text boundaries and the background edges.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>backgroundStroke</code></td>
+<td style="text-align: left;"><code>float?</code></td>
+<td style="text-align: left;">Draws an outline border around the background panel.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>backgroundStrokeColor</code></td>
+<td style="text-align: left;"><code>Color</code></td>
+<td style="text-align: left;">The color of the background panel's border.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">var titleText = new TextFrame
+{
+    fontName = &quot;main&quot;,
+    text = &quot;Leaderboard\nStage Complete&quot;,
+    scale = 1.5f,
+    color = Color.White,
+    strokeWidth = 1.5f,
+    strokeColor = Color.Black,
+    textAnchorX = AnchorX.Center,
+    textAnchorY = AnchorY.Center,
+    position = UDim2.FromScale(0.5f, 0.3f),
+    anchorX = AnchorX.Center,
+    anchorY = AnchorY.Center,
+
+    // Background box parameters
+    backgroundColor = new Color(&quot;#0E0E14&quot;),
+    backgroundPadding = 12f,
+    backgroundStroke = 2f,
+    backgroundStrokeColor = new Color(&quot;#8A2BE2&quot;)
+};
+</code></pre>
+<hr />
+<h2 id="4-solid-button-button">4. Solid Button (<code>Button</code>)</h2>
+<p>An interactive rectangular button. It automatically updates its visual state between hovered, pressed, and default based on mouse coordinates.</p>
+<h3 id="properties-state">Properties &amp; State</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Property</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>color</code></td>
+<td style="text-align: left;"><code>Color</code></td>
+<td style="text-align: left;">The default background color.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hoverColor</code></td>
+<td style="text-align: left;"><code>Color</code></td>
+<td style="text-align: left;">The background color when the mouse cursor is inside the button's hitbox.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>pressedColor</code></td>
+<td style="text-align: left;"><code>Color</code></td>
+<td style="text-align: left;">The background color when clicked and held.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>alpha</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Button opacity.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>rotation</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Button rotation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>IsHovered</code></td>
+<td style="text-align: left;"><code>bool</code></td>
+<td style="text-align: left;">Read-only state indicating if the cursor is hovering over the button.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>IsPressed</code></td>
+<td style="text-align: left;"><code>bool</code></td>
+<td style="text-align: left;">Read-only state indicating if the button is currently clicked.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events">Events</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Event</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>onClick</code></td>
+<td style="text-align: left;"><code>Action&lt;Button&gt;</code></td>
+<td style="text-align: left;">Invoked when the mouse button is pressed and released inside the button hitbox.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>onHoverEnter</code></td>
+<td style="text-align: left;"><code>Action&lt;Button&gt;</code></td>
+<td style="text-align: left;">Invoked on the exact frame the cursor enters the button hitbox.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>onHoverExit</code></td>
+<td style="text-align: left;"><code>Action&lt;Button&gt;</code></td>
+<td style="text-align: left;">Invoked on the exact frame the cursor leaves the button hitbox.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">var submitBtn = new Button
+{
+    size = UDim2.FromOffset(150, 45),
+    position = UDim2.FromScale(0.5f, 0.8f),
+    anchorX = AnchorX.Center,
+    anchorY = AnchorY.Center,
+    color = new Color(&quot;#2A2C3E&quot;),
+    hoverColor = new Color(&quot;#3A3D5E&quot;),
+    pressedColor = new Color(&quot;#8A2BE2&quot;)
+};
+
+// Attach click callback
+submitBtn.onClick += btn =&gt;
+{
+    Console.WriteLine(&quot;Button Clicked!&quot;);
+    PlayMenuTickSound();
+};
+
+// Nest text inside the button container
+submitBtn.children.Add(new TextFrame
+{
+    fontName = &quot;main&quot;,
+    text = &quot;SUBMIT&quot;,
+    scale = 1f,
+    color = Color.White,
+    position = UDim2.FromScale(0.5f, 0.5f),
+    anchorX = AnchorX.Center,
+    anchorY = AnchorY.Center
+});
+</code></pre>
+<hr />
+<h2 id="5-textured-button-imagebutton">5. Textured Button (<code>ImageButton</code>)</h2>
+<p>An interactive button rendered with texture assets.</p>
+<h3 id="properties_3">Properties</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Property</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>texture</code></td>
+<td style="text-align: left;"><code>Image</code></td>
+<td style="text-align: left;">The default image texture.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hoverImage</code></td>
+<td style="text-align: left;"><code>Image?</code></td>
+<td style="text-align: left;">An optional alternative texture to display when hovered. Falls back to <code>texture</code> if not specified.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>pressedImage</code></td>
+<td style="text-align: left;"><code>Image?</code></td>
+<td style="text-align: left;">An optional alternative texture to display when pressed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>fit</code></td>
+<td style="text-align: left;"><code>ObjectFit</code></td>
+<td style="text-align: left;">The aspect-ratio fit mode.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>color</code></td>
+<td style="text-align: left;"><code>Color</code></td>
+<td style="text-align: left;">Texture color tint.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>alpha</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Opacity.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hoverAlpha</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Opacity applied when hovered (defaults to <code>1f</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>pressedAlpha</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Opacity applied when pressed (defaults to <code>0.7f</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events_1">Events</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Event</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>onClick</code></td>
+<td style="text-align: left;"><code>Action&lt;ImageButton&gt;</code></td>
+<td style="text-align: left;">Invoked when the button is clicked.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>onHoverEnter</code></td>
+<td style="text-align: left;"><code>Action&lt;ImageButton&gt;</code></td>
+<td style="text-align: left;">Invoked when hover starts.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>onHoverExit</code></td>
+<td style="text-align: left;"><code>Action&lt;ImageButton&gt;</code></td>
+<td style="text-align: left;">Invoked when hover ends.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../audio-rhythm/" class="btn btn-neutral float-left" title="Audio & Rhythm"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../ui-advanced-components/" class="btn btn-neutral float-right" title="Advanced UI Components">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../audio-rhythm/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../ui-advanced-components/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

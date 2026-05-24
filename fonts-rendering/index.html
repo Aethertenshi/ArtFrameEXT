@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>MTSDF Font Rendering - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "MTSDF Font Rendering";
+        var mkdocs_page_input_path = "fonts-rendering.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">MTSDF Font Rendering</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#technical-concept">Technical Concept</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#public-methods">Public Methods</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#loadatlasfont">LoadAtlasFont</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#measuretext">MeasureText</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#measuretextbounds">MeasureTextBounds</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#drawtextpro">DrawTextPro</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#argument-functions-details">Argument Functions &amp; Details</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Graphics & Tweens</li>
+      <li class="breadcrumb-item active">MTSDF Font Rendering</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="mtsdf-font-rendering-fontshelpercs">MTSDF Font Rendering (<code>FontsHelper.cs</code>)</h1>
+<p>ArtFrame utilizes <strong>Multi-channel Signed Distance Field (MTSDF)</strong> font rendering. Unlike standard rasterized bitmap fonts that blur or pixelate when scaled, MTSDF fonts preserve perfectly sharp, vector-like vector edges at any resolution or magnification.</p>
+<hr />
+<h2 id="technical-concept">Technical Concept</h2>
+<p>MTSDF rendering works by storing distance metrics across four channels (Red, Green, Blue, and Alpha) in a pre-generated atlas texture. During rendering, a custom pixel shader (<code>shaders/atlas.fxb</code>) interpolates these distance values to reconstruct smooth glyph boundaries at high performance.</p>
+<hr />
+<h2 id="public-methods">Public Methods</h2>
+<h3 id="loadatlasfont"><code>LoadAtlasFont</code></h3>
+<p>Loads and registers an MTSDF font atlas into the global font dictionary.</p>
+<pre><code class="language-csharp">public static void LoadAtlasFont(string fontName, string jsonPath, string texturePath)
+</code></pre>
+<ul>
+<li>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>fontName</code>: A unique key to register this font. Pass this string key to UI elements or text drawings.</li>
+<li><code>jsonPath</code>: The path to the font atlas JSON metrics file generated by <code>msdf-atlas-gen</code>.</li>
+<li><code>texturePath</code>: The path to the companion PNG atlas texture.</li>
+</ul>
+</li>
+<li>
+<p><strong>Example Usage:</strong></p>
+</li>
+</ul>
+<pre><code class="language-csharp">public void Setup()
+{
+    FontHelper.LoadAtlasFont(&quot;main&quot;, &quot;fonts/main.json&quot;, &quot;fonts/main.png&quot;);
+}
+</code></pre>
+<hr />
+<h3 id="measuretext"><code>MeasureText</code></h3>
+<p>Measures the virtual bounding dimensions of a string of text based on character advance widths and line count, without accounting for pixel padding.</p>
+<pre><code class="language-csharp">public static Vector2 MeasureText(string fontName, string text, float scale = 1f)
+</code></pre>
+<ul>
+<li><strong>Parameters:</strong><ul>
+<li><code>fontName</code>: The registered name of the target font.</li>
+<li><code>text</code>: The string of text to measure.</li>
+<li><code>scale</code>: The text scaling factor (defaults to <code>1f</code>).</li>
+</ul>
+</li>
+<li><strong>Returns:</strong> A <code>Vector2</code> representing the virtual boundary (Width, Height).</li>
+</ul>
+<hr />
+<h3 id="measuretextbounds"><code>MeasureTextBounds</code></h3>
+<p>Calculates the <strong>exact physical boundaries and visual offset</strong> of a string of text, accounting for spacing, character shapes, and distance-field padding. </p>
+<pre><code class="language-csharp">public static (Vector2 offset, Vector2 size) MeasureTextBounds(string fontName, string text, float scale = 1f)
+</code></pre>
+<ul>
+<li><strong>Parameters:</strong><ul>
+<li><code>fontName</code>: The registered name of the target font.</li>
+<li><code>text</code>: The string of text to measure.</li>
+<li><code>scale</code>: The text scaling factor.</li>
+</ul>
+</li>
+<li><strong>Returns:</strong> A tuple:<ul>
+<li><code>offset</code> (<code>Vector2</code>): The physical displacement of the first glyph relative to the coordinate origin.</li>
+<li><code>size</code> (<code>Vector2</code>): The absolute width and height of the visual bounding box on screen.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="drawtextpro"><code>DrawTextPro</code></h3>
+<p>The framework's high-level text rendering routine. It supports rotation, custom scaling, anchoring, and outline strokes.</p>
+<pre><code class="language-csharp">internal static void DrawTextPro(
+    string fontName,
+    string text,
+    Vector2 position,
+    Vector2 origin,
+    float rotation,
+    float scale,
+    Color color,
+    float strokeWidth = 0f,
+    Color? strokeColor = null)
+</code></pre>
+<h4 id="argument-functions-details">Argument Functions &amp; Details</h4>
+<ul>
+<li><code>fontName</code> — The registered key of the font to use.</li>
+<li><code>text</code> — The string of text to draw. Supports multi-line strings split by <code>\n</code> escape sequences.</li>
+<li><code>position</code> — The absolute pixel coordinate representing the destination location on the screen.</li>
+<li><code>origin</code> — The pivot coordinate (in pixels) relative to the text's bounding box. For example, passing <code>MeasureText() / 2f</code> as the origin centers the text on the <code>position</code> coordinate.</li>
+<li><code>rotation</code> — The rotation angle of the text, specified in <strong>degrees</strong> (rotates around the <code>origin</code> pivot).</li>
+<li><code>scale</code> — The font size multiplier. MTSDF preserves razor-sharp edges even at extremely large scales (e.g. <code>10f</code>).</li>
+<li><code>color</code> — The master text tint and opacity.</li>
+<li><code>strokeWidth</code> — The thickness of the outline stroke in pixels (defaults to <code>0f</code> for no stroke).</li>
+<li>
+<p><code>strokeColor</code> — The color of the outline stroke. Drawn as an underlying offset matrix layer.</p>
+</li>
+<li>
+<p><strong>Low-Level Manual Drawing Example:</strong></p>
+</li>
+</ul>
+<pre><code class="language-csharp">public void ManualDraw(float dt)
+{
+    string textStr = &quot;ArtFrame Engine&quot;;
+    float fontScale = 3f;
+
+    // Measure text boundaries
+    Vector2 size = FontHelper.MeasureText(&quot;main&quot;, textStr, fontScale);
+
+    // Center pivot origin
+    Vector2 origin = size / 2f;
+
+    // Render at screen coordinates with a black outline stroke
+    FontHelper.DrawTextPro(
+        fontName: &quot;main&quot;,
+        text: textStr,
+        position: new Vector2(640, 360),
+        origin: origin,
+        rotation: 0f,
+        scale: fontScale,
+        color: Color.White,
+        strokeWidth: 2f,
+        strokeColor: Color.Black
+    );
+}
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../graphics-primitives/" class="btn btn-neutral float-left" title="Graphics & Animation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../audio-rhythm/" class="btn btn-neutral float-right" title="Audio & Rhythm">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../graphics-primitives/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../audio-rhythm/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

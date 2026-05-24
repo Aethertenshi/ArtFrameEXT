@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Beatmap Parsing & Models - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Beatmap Parsing \u0026 Models";
+        var mkdocs_page_input_path = "osu-beatmaps.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Beatmap Parsing & Models</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-beatmap-model-osubeatmapcs">1. Beatmap Model (OsuBeatmap.cs)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#raw-data-dictionaries">Raw Data Dictionaries</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#filtered-enumerations">Filtered Enumerations</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#timing-speed-helpers">Timing &amp; Speed Helpers</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#gettimingpointat">GetTimingPointAt</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#getbpmat">GetBpmAt</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#getbackgroundfullpath">GetBackgroundFullPath</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#technical-detail-resolving-slider-velocities">Technical Detail: Resolving Slider Velocities</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-beatmap-parser-osuparsercs">2. Beatmap Parser (OsuParser.cs)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-methods">Public Methods</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#parse">Parse</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#parsetext">ParseText</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-beatmap-discovery-osuscannercs">3. Beatmap Discovery (OsuScanner.cs)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-methods_1">Public Methods</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#findosufiles">FindOsuFiles</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#scanall">ScanAll</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#scanlazy">ScanLazy</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#parseset">ParseSet</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-domain-models-models">4. Domain Models (Models/)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#osuhitobject-base-class">OsuHitObject (Base Class)</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#properties">Properties</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#circle-notes-osunote">Circle Notes (OsuNote)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sliders-osuslider">Sliders (OsuSlider)</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#properties_1">Properties</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#timing-points-osutimingpoint">Timing Points (OsuTimingPoint)</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#properties_2">Properties</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#derived-properties">Derived Properties</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">osu! Beatmap Integration</li>
+      <li class="breadcrumb-item active">Beatmap Parsing & Models</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="osu-beatmap-integration">osu! Beatmap Integration</h1>
+<p>ArtFrame features an integrated parsing and discovery suite for <strong>osu! beatmaps (<code>.osu</code> files)</strong>. This enables developers to scan song directories, parse metadata, read individual hit objects (taps, sliders, holds), extract background images, and synchronize metronome animations using beatmap timing points.</p>
+<hr />
+<h2 id="1-beatmap-model-osubeatmapcs">1. Beatmap Model (<code>OsuBeatmap.cs</code>)</h2>
+<p>The <code>OsuBeatmap</code> class holds the parsed data of a <code>.osu</code> file and provides helpers to query metadata, timing, and hit objects.</p>
+<h3 id="raw-data-dictionaries">Raw Data Dictionaries</h3>
+<ul>
+<li><code>General</code> (<code>Dictionary&lt;string, string&gt;</code>): Settings like <code>AudioFilename</code> or <code>PreviewTime</code>.</li>
+<li><code>Metadata</code> (<code>Dictionary&lt;string, string&gt;</code>): Track identifiers (<code>Title</code>, <code>Artist</code>, <code>Creator</code>, <code>Version</code>/Difficulty).</li>
+<li><code>Difficulty</code> (<code>Dictionary&lt;string, string&gt;</code>): Game parameters (<code>HPDifficulty</code>, <code>CS</code> (Circle Size), <code>OverallDifficulty</code>, <code>ApproachRate</code>, <code>SliderMultiplier</code>).</li>
+<li><code>TimingPoints</code> (<code>List&lt;OsuTimingPoint&gt;</code>): List of all timing points (red and green lines).</li>
+<li><code>HitObjects</code> (<code>List&lt;OsuHitObject&gt;</code>): List of all parsed interactive objects, sorted chronologically.</li>
+</ul>
+<h3 id="filtered-enumerations">Filtered Enumerations</h3>
+<ul>
+<li><code>Notes</code> (<code>IEnumerable&lt;OsuNote&gt;</code>): Filters and returns only circle tap notes.</li>
+<li><code>Sliders</code> (<code>IEnumerable&lt;OsuSlider&gt;</code>): Filters and returns only sliders.</li>
+<li><code>BpmPoints</code> (<code>IEnumerable&lt;OsuTimingPoint&gt;</code>): Filters and returns only uninherited (red-line) timing points carrying BPM parameters.</li>
+</ul>
+<h3 id="timing-speed-helpers">Timing &amp; Speed Helpers</h3>
+<h4 id="gettimingpointat"><code>GetTimingPointAt</code></h4>
+<p>Returns the active timing point at the specified timestamp.</p>
+<pre><code class="language-csharp">public OsuTimingPoint? GetTimingPointAt(double t, bool uninheritedOnly = false)
+</code></pre>
+<h4 id="getbpmat"><code>GetBpmAt</code></h4>
+<p>Returns the BPM active at the specified timestamp.</p>
+<pre><code class="language-csharp">public double GetBpmAt(double timeMs)
+</code></pre>
+<h4 id="getbackgroundfullpath"><code>GetBackgroundFullPath</code></h4>
+<p>Returns the absolute path to the beatmap's background image filename listed in the events section.</p>
+<pre><code class="language-csharp">public string GetBackgroundFullPath()
+</code></pre>
+<hr />
+<h3 id="technical-detail-resolving-slider-velocities">Technical Detail: Resolving Slider Velocities</h3>
+<p>Osu! sliders store their physical length in pixels and the number of slides (repeats), but do not explicitly specify their duration in milliseconds. The duration depends on the active BPM timing point (red line) and the active velocity multiplier (green line).</p>
+<p>ArtFrame's <code>ResolveSliderVelocities()</code> automatically calculates this duration at load time:
+1.  Locates the active BPM timing point (<code>BeatLength</code> in ms per beat) and the active velocity multiplier (<code>velMult</code>):
+    $$\text{velMult} = \begin{cases} 1.0 &amp; \text{if uninherited (red line)} \ -100 / \text{BeatLength} &amp; \text{if inherited (green line)} \end{cases}$$
+2.  Computes the slider speed in pixels per beat based on the map's <code>SliderMultiplier</code>:
+    $$\text{PixelsPerBeat} = 100 \times \text{SliderMultiplier} \times \text{velMult}$$
+3.  Calculates the duration of a single pass of the slider (in milliseconds):
+    $$\text{SinglePassMs} = \frac{\text{Length}}{\text{PixelsPerBeat}} \times \text{BeatLength}$$
+4.  Calculates the total slider duration and effective velocity:
+    $$\text{DurationMs} = \text{SinglePassMs} \times \text{Slides}$$
+    $$\text{EffectiveVelocityPxPerMs} = \frac{\text{Length}}{\text{SinglePassMs}}$$</p>
+<hr />
+<h2 id="2-beatmap-parser-osuparsercs">2. Beatmap Parser (<code>OsuParser.cs</code>)</h2>
+<p>Parses raw <code>.osu</code> text data into an <code>OsuBeatmap</code> instance.</p>
+<h3 id="public-methods">Public Methods</h3>
+<h4 id="parse"><code>Parse</code></h4>
+<p>Reads and parses a <code>.osu</code> file from disk. Automatically resolves slider velocities before returning.</p>
+<pre><code class="language-csharp">public OsuBeatmap Parse(string path)
+</code></pre>
+<h4 id="parsetext"><code>ParseText</code></h4>
+<p>Parses raw <code>.osu</code> text content directly from a string.</p>
+<pre><code class="language-csharp">public OsuBeatmap ParseText(string content, string sourcePath = &quot;&quot;)
+</code></pre>
+<hr />
+<h2 id="3-beatmap-discovery-osuscannercs">3. Beatmap Discovery (<code>OsuScanner.cs</code>)</h2>
+<p>A utility for scanning folders and parsing multiple beatmaps in batch.</p>
+<h3 id="public-methods_1">Public Methods</h3>
+<h4 id="findosufiles"><code>FindOsuFiles</code></h4>
+<p>Recursively searches a root folder and returns the absolute paths of all discovered <code>.osu</code> files.</p>
+<pre><code class="language-csharp">public IReadOnlyList&lt;string&gt; FindOsuFiles(string rootDirectory)
+</code></pre>
+<h4 id="scanall"><code>ScanAll</code></h4>
+<p>Finds and parses every <code>.osu</code> file in the specified root folder, skipping files that fail to parse.</p>
+<pre><code class="language-csharp">public IReadOnlyList&lt;OsuBeatmap&gt; ScanAll(string rootDirectory, Action&lt;string, Exception&gt;? onError = null)
+</code></pre>
+<h4 id="scanlazy"><code>ScanLazy</code></h4>
+<p>Lazily parses files one at a time using an iterator. This is memory-efficient for scanning very large directories.</p>
+<pre><code class="language-csharp">public IEnumerable&lt;OsuBeatmap&gt; ScanLazy(string rootDirectory, Action&lt;string, Exception&gt;? onError = null)
+</code></pre>
+<h4 id="parseset"><code>ParseSet</code></h4>
+<p>Parses all <code>.osu</code> files directly inside a single beatmap directory (representing a single song containing multiple difficulties).</p>
+<pre><code class="language-csharp">public IReadOnlyList&lt;OsuBeatmap&gt; ParseSet(string beatmapSetDirectory)
+</code></pre>
+<hr />
+<h2 id="4-domain-models-models">4. Domain Models (<code>Models/</code>)</h2>
+<h3 id="osuhitobject-base-class"><code>OsuHitObject</code> (Base Class)</h3>
+<p>The abstract base class for all objects in the beatmap's hit list.</p>
+<h4 id="properties">Properties</h4>
+<ul>
+<li><code>X</code> / <code>Y</code> (<code>int</code>): Coordinates (on the standard $512 \times 384$ osu! playfield coordinate space).</li>
+<li><code>Time</code> (<code>int</code>): The starting timestamp of the hit object in milliseconds.</li>
+<li><code>ObjectType</code> (<code>HitObjectType</code>): Enumeration type (<code>Note</code>, <code>Slider</code>, <code>Spinner</code>, <code>Hold</code>, <code>Unknown</code>).</li>
+<li><code>IsNewCombo</code> (<code>bool</code>): True if this object starts a new combo chain.</li>
+<li><code>HitSound</code> (<code>int</code>): Bitmask flags representing active hitsound effects (Normal, Whistle, Finish, Clap).</li>
+</ul>
+<hr />
+<h3 id="circle-notes-osunote">Circle Notes (<code>OsuNote</code>)</h3>
+<p>Inherits all properties from the base <code>OsuHitObject</code>. Represents a single tap/click circle.</p>
+<hr />
+<h3 id="sliders-osuslider">Sliders (<code>OsuSlider</code>)</h3>
+<p>Represents a slider path.</p>
+<h4 id="properties_1">Properties</h4>
+<ul>
+<li><code>CurveType</code> (<code>SliderCurveType</code>): The interpolation path type (<code>Bezier</code>, <code>CatmullRom</code>, <code>Linear</code>, <code>PerfectCircle</code>, <code>Unknown</code>).</li>
+<li><code>CurvePoints</code> (<code>List&lt;SliderPoint&gt;</code>): Control points defining the slider path (excluding the starting position coordinate).</li>
+<li><code>Slides</code> (<code>int</code>): The number of repeat passes (1 = one way, 2 = back-and-forth once).</li>
+<li><code>Length</code> (<code>double</code>): Visual length of the slider path in osu! pixels.</li>
+<li><code>DurationMs</code> (<code>double</code>): The resolved total duration in milliseconds (calculated by the engine).</li>
+<li><code>EndTime</code> (<code>double</code>): The millisecond timestamp when the slider ends.</li>
+</ul>
+<hr />
+<h3 id="timing-points-osutimingpoint">Timing Points (<code>OsuTimingPoint</code>)</h3>
+<p>Represents an entry in the beatmap's timing list.</p>
+<h4 id="properties_2">Properties</h4>
+<ul>
+<li><code>Time</code> (<code>double</code>): The starting timestamp of the timing point in milliseconds.</li>
+<li><code>BeatLength</code> (<code>double</code>):<ul>
+<li>For uninherited points (red lines): Milliseconds per beat (positive value).</li>
+<li>For inherited points (green lines): Velocity multiplier factor expressed as a negative percentage ($-\text{multiplier} \times 100$).</li>
+</ul>
+</li>
+<li><code>Meter</code> (<code>int</code>): Time signature numerator (defaults to <code>4</code> for 4/4 time).</li>
+<li><code>IsUninherited</code> (<code>bool</code>):<ul>
+<li><code>true</code> = Red line (defines new BPM and resets metronome synchronization).</li>
+<li><code>false</code> = Green line (inherits BPM, adjusts local volume or slider velocity).</li>
+</ul>
+</li>
+</ul>
+<h4 id="derived-properties">Derived Properties</h4>
+<ul>
+<li><code>BPM</code> (<code>double</code>): Returns the calculated BPM if the point is uninherited, otherwise returns <code>NaN</code>.
+    $$\text{BPM} = \frac{60,000}{\text{BeatLength}}$$</li>
+<li><code>VelocityMultiplier</code> (<code>double</code>): Calculates the slider velocity multiplier.
+    $$\text{Multiplier} = \begin{cases} 1.0 &amp; \text{if IsUninherited} \ -100 / \text{BeatLength} &amp; \text{if Inherited} \end{cases}$$</li>
+<li><code>IsKiai</code> (<code>bool</code>): Returns <code>true</code> if Kiai flash mode is active at this timing point.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../ui-modifiers/" class="btn btn-neutral float-left" title="Layout Modifiers"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../ui-modifiers/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

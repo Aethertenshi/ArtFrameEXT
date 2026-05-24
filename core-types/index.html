@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Core Types - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Core Types";
+        var mkdocs_page_input_path = "core-types.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Core Types</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#alignments-scaling-enums">Alignments &amp; Scaling Enums</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#anchorx">AnchorX</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#anchory">AnchorY</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#objectfit">ObjectFit</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mathematical-structs">Mathematical Structs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#color">Color</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#constructors">Constructors</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#static-methods">Static Methods</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#predefined-colors">Predefined Colors</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#udim2">UDim2</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#fields">Fields</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#constructors_1">Constructors</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#public-methods">Public Methods</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#static-helpers-shorthands">Static Helpers &amp; Shorthands</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#vector2">Vector2</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#fields_1">Fields</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#constructors_2">Constructors</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#public-methods_1">Public Methods</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#predefined-vectors">Predefined Vectors</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rectangle">Rectangle</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#fields_2">Fields</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#properties">Properties</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#public-methods_2">Public Methods</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Core Modules</li>
+      <li class="breadcrumb-item active">Core Types</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="core-types-arttypescs">Core Types (<code>ArtTypes.cs</code>)</h1>
+<p>The core types module defines the basic spatial, visual, and mathematical primitives used throughout the ArtFrame framework. These custom types replace standard XNA structs to keep the API clean, platform-independent, and developer-friendly.</p>
+<hr />
+<h2 id="alignments-scaling-enums">Alignments &amp; Scaling Enums</h2>
+<h3 id="anchorx"><code>AnchorX</code></h3>
+<p>Specifies the horizontal pivot/alignment point of a UI component relative to its position.</p>
+<pre><code class="language-csharp">public enum AnchorX
+{
+    Left,   // Alignment pivot at the left edge (0.0)
+    Center, // Alignment pivot at the horizontal center (0.5)
+    Right   // Alignment pivot at the right edge (1.0)
+}
+</code></pre>
+<h3 id="anchory"><code>AnchorY</code></h3>
+<p>Specifies the vertical pivot/alignment point of a UI component relative to its position.</p>
+<pre><code class="language-csharp">public enum AnchorY
+{
+    Top,    // Alignment pivot at the top edge (0.0)
+    Center, // Alignment pivot at the vertical center (0.5)
+    Bottom  // Alignment pivot at the bottom edge (1.0)
+}
+</code></pre>
+<h3 id="objectfit"><code>ObjectFit</code></h3>
+<p>Defines how an image fits inside a bounding box of different aspect ratios.</p>
+<pre><code class="language-csharp">public enum ObjectFit
+{
+    Fill,     // Stretches/squashes image to fill the exact box dimensions
+    Contain,  // Scales image uniformly to fit completely within the box (letterbox)
+    Cover,    // Scales image uniformly to cover the box, cropping overflow (no empty bars)
+    None      // Draws image at its native resolution, centered inside the box
+}
+</code></pre>
+<hr />
+<h2 id="mathematical-structs">Mathematical Structs</h2>
+<h3 id="color"><code>Color</code></h3>
+<p>A custom 4-byte RGBA color representation supporting hexadecimal string parsing, linear interpolation, and fading.</p>
+<h4 id="constructors">Constructors</h4>
+<ul>
+<li><strong>Byte-based Color:</strong> Creates a color with R, G, B, and optional Alpha (defaults to 255/fully opaque).</li>
+</ul>
+<pre><code class="language-csharp">public Color(byte r, byte g, byte b, byte a = 255)
+</code></pre>
+<ul>
+<li><strong>Hex String Color:</strong> Parses hex colors, supporting standard formats (e.g. <code>"#FF0000"</code> or <code>"#FF0000FF"</code>).</li>
+</ul>
+<pre><code class="language-csharp">public Color(string hex)
+</code></pre>
+<h4 id="static-methods">Static Methods</h4>
+<ul>
+<li><code>LerpColor</code>: Linearly interpolates color channel values between <code>a</code> and <code>b</code> by fraction <code>t</code> (0.0 to 1.0).</li>
+</ul>
+<pre><code class="language-csharp">public static Color LerpColor(Color a, Color b, float t)
+</code></pre>
+<ul>
+<li><code>Fade</code>: Returns a copy of the color with its alpha scaled by a float multiplier <code>alpha</code> (0.0 to 1.0).</li>
+</ul>
+<pre><code class="language-csharp">public static Color Fade(Color color, float alpha)
+</code></pre>
+<h4 id="predefined-colors">Predefined Colors</h4>
+<ul>
+<li><code>Color.White</code> — <code>new Color(255, 255, 255)</code></li>
+<li><code>Color.Black</code> — <code>new Color(0, 0, 0)</code></li>
+<li><code>Color.Blue</code>  — <code>new Color(0, 0, 255)</code></li>
+</ul>
+<hr />
+<h3 id="udim2"><code>UDim2</code></h3>
+<p>A two-dimensional coordinate system using relative scales (0.0 to 1.0) and absolute pixel offsets. This allows fluid responsive layouts inspired by web and engine systems.</p>
+<p>$$\text{Resolved Position} = (\text{ParentWidth} \times \text{ScaleX}) + \text{OffsetX}$$</p>
+<h4 id="fields">Fields</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ScaleX</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Fractional scale along the horizontal axis (relative to parent size).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ScaleY</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Fractional scale along the vertical axis (relative to parent size).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>OffsetX</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Absolute pixel offset along the horizontal axis.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>OffsetY</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Absolute pixel offset along the vertical axis.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="constructors_1">Constructors</h4>
+<ul>
+<li><strong>Scale-only UDim2:</strong> Offset defaults to zero.</li>
+</ul>
+<pre><code class="language-csharp">public UDim2(float scaleX, float scaleY)
+</code></pre>
+<ul>
+<li><strong>Scale and Offset UDim2:</strong> Full parameter initialization.</li>
+</ul>
+<pre><code class="language-csharp">public UDim2(float scaleX, float scaleY, float offsetX, float offsetY)
+</code></pre>
+<h4 id="public-methods">Public Methods</h4>
+<ul>
+<li><code>Resolve</code>: Calculates the absolute pixel vector (<code>Vector2</code>) based on parent container dimensions.</li>
+</ul>
+<pre><code class="language-csharp">public Vector2 Resolve(Vector2 parentSize)
+</code></pre>
+<h4 id="static-helpers-shorthands">Static Helpers &amp; Shorthands</h4>
+<ul>
+<li><code>UDim2.FromOffset(x, y)</code>: Returns a <code>UDim2</code> with 0% scale and absolute pixel offsets.</li>
+<li><code>UDim2.FromScale(x, y)</code>: Returns a <code>UDim2</code> with percentage scale and 0 pixel offsets.</li>
+<li><code>UDim2.Lerp(a, b, t)</code>: Linearly interpolates scales and offsets between <code>a</code> and <code>b</code> by fraction <code>t</code>.</li>
+</ul>
+<hr />
+<h3 id="vector2"><code>Vector2</code></h3>
+<p>A custom 2D float vector representation.</p>
+<h4 id="fields_1">Fields</h4>
+<ul>
+<li><code>X</code> — Horizontal float coordinate.</li>
+<li><code>Y</code> — Vertical float coordinate.</li>
+</ul>
+<h4 id="constructors_2">Constructors</h4>
+<pre><code class="language-csharp">public Vector2(float x, float y)
+</code></pre>
+<h4 id="public-methods_1">Public Methods</h4>
+<ul>
+<li><code>Length()</code>: Calculates the magnitude (hypotenuse) of the vector.</li>
+<li><code>Normalize()</code>: Returns a unit vector with a length of 1.0 pointing in the same direction.</li>
+<li><code>Distance(v1, v2)</code>: Calculates the Euclidean distance between two vectors.</li>
+<li><code>Lerp(v1, v2, amount)</code>: Performs linear interpolation.</li>
+</ul>
+<h4 id="predefined-vectors">Predefined Vectors</h4>
+<ul>
+<li><code>Vector2.Zero</code> — <code>new Vector2(0f, 0f)</code></li>
+<li><code>Vector2.One</code>  — <code>new Vector2(1f, 1f)</code></li>
+<li><code>Vector2.UnitX</code> — <code>new Vector2(1f, 0f)</code></li>
+<li><code>Vector2.UnitY</code> — <code>new Vector2(0f, 1f)</code></li>
+</ul>
+<hr />
+<h3 id="rectangle"><code>Rectangle</code></h3>
+<p>A float-based 2D rectangle representation.</p>
+<h4 id="fields_2">Fields</h4>
+<ul>
+<li><code>X</code>, <code>Y</code> — The coordinates of the top-left corner.</li>
+<li><code>Width</code>, <code>Height</code> — Dimensions of the box.</li>
+</ul>
+<h4 id="properties">Properties</h4>
+<ul>
+<li><code>Top</code> (Y), <code>Left</code> (X), <code>Bottom</code> (Y + Height), <code>Right</code> (X + Width).</li>
+<li><code>Center</code> — Returns the geometric center of the rectangle as a <code>Vector2</code>.</li>
+</ul>
+<h4 id="public-methods_2">Public Methods</h4>
+<ul>
+<li><code>Contains(x, y)</code>: Returns true if the coordinates reside within the rectangle bounds.</li>
+<li><code>Intersect(r1, r2)</code>: Returns the overlapping rectangle segment. Returns <code>Rectangle.Empty</code> if no overlap exists.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../engine/" class="btn btn-neutral float-left" title="Core Engine"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../input-helpers/" class="btn btn-neutral float-right" title="Input & File Drop">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../engine/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../input-helpers/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

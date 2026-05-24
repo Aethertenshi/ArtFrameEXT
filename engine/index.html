@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Core Engine - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Core Engine";
+        var mkdocs_page_input_path = "engine.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Core Engine</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#technical-architecture">Technical Architecture</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#public-interfaces">Public Interfaces</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#iart">IArt</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#iarthelper">IArtHelper</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#iframemodifier">IFrameModifier</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#base-class-artobject">Base Class: ArtObject</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#properties">Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#public-methods">Public Methods</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#getresolvedsize">GetResolvedSize</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#static-bootstrapper-engine">Static Bootstrapper: Engine</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-methods_1">Public Methods</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#runt">Run&lt;T&gt;</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Core Modules</li>
+      <li class="breadcrumb-item active">Core Engine</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="core-engine-enginecs">Core Engine (<code>Engine.cs</code>)</h1>
+<p>The core engine module establishes the application lifecycle, frame loops, and base hierarchies of ArtFrame. It manages the underlying XNA game loop and handles draw suppression to run rendering and updates efficiently.</p>
+<hr />
+<h2 id="technical-architecture">Technical Architecture</h2>
+<p>ArtFrame separates application lifecycle methods from internal framework pipelines. By implementing the <code>IArt</code> interface, you define setup, logic ticks, and manual draw procedures, while the engine handles execution, input state tracking, tween steps, and garbage-collected layouts under the hood.</p>
+<pre><code>  ┌─────────────────┐
+  │  Engine.Run&lt;T&gt;  │ ──&gt; Bootstraps application
+  └────────┬────────┘
+           │
+           ▼
+  ┌─────────────────┐
+  │   IArt.Setup    │ ──&gt; Configures window, assets, UI elements
+  └────────┬────────┘
+           │
+     [ Game Loop ]
+           │
+           ├────────────────────────────┐
+           ▼                            ▼
+  ┌─────────────────┐          ┌─────────────────┐
+  │  IArt.Update    │          │ IArt.ManualDraw │
+  │                 │          │                 │
+  │  - Inputs       │          │  - Solid colors │
+  │  - Tweens       │          │  - SpriteBatch  │
+  │  - UI States    │          │  - Primitives   │
+  └─────────────────┘          └─────────────────┘
+</code></pre>
+<hr />
+<h2 id="public-interfaces">Public Interfaces</h2>
+<h3 id="iart"><code>IArt</code></h3>
+<p>This is the primary interface that developers implement to hook their custom game or art logic into the framework.</p>
+<pre><code class="language-csharp">public interface IArt
+{
+    /// &lt;summary&gt;
+    /// Invoked once at startup. Use this to configure the window, load texture
+    /// and font assets, and build initial UI trees.
+    /// &lt;/summary&gt;
+    void Setup();
+
+    /// &lt;summary&gt;
+    /// Invoked on every logic tick. Receives delta time in seconds.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;dt&quot;&gt;Elapsed seconds since the last frame.&lt;/param&gt;
+    void Update(float dt);
+
+    /// &lt;summary&gt;
+    /// Invoked on every render tick. Use this for low-level direct drawing.
+    /// Render operations in this method run after window clearing.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;dt&quot;&gt;Elapsed seconds since the last frame.&lt;/param&gt;
+    void ManualDraw(float dt);
+}
+</code></pre>
+<h3 id="iarthelper"><code>IArtHelper</code></h3>
+<p>Used by framework helper services that hook into the central update and draw pipelines.</p>
+<pre><code class="language-csharp">public interface IArtHelper
+{
+    void Update(float dt);
+    void Draw(float dt);
+}
+</code></pre>
+<h3 id="iframemodifier"><code>IFrameModifier</code></h3>
+<p>Defines layout layout behaviors (like list structures or grid structures) applied dynamically to children of frames.</p>
+<pre><code class="language-csharp">public interface IFrameModifier
+{
+    /// &lt;summary&gt;
+    /// Re-calculates and overrides positions/sizes of child components inside a parent container.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;children&quot;&gt;The list of child elements within the frame.&lt;/param&gt;
+    /// &lt;param name=&quot;frameSize&quot;&gt;The resolved dimensions of the parent frame.&lt;/param&gt;
+    void Apply(List&lt;ArtObject&gt; children, ArtTypes.Vector2 frameSize);
+}
+</code></pre>
+<hr />
+<h2 id="base-class-artobject">Base Class: <code>ArtObject</code></h2>
+<p>The <code>ArtObject</code> is the fundamental abstract base class for all visual components, declarative UI elements, and layout containers in ArtFrame. It includes spatial properties and virtual methods to hook custom components into the layout pipeline.</p>
+<h3 id="properties">Properties</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Property</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>position</code></td>
+<td style="text-align: left;"><code>UDim2</code></td>
+<td style="text-align: left;">The relative scale + absolute pixel offset positioning vector.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>size</code></td>
+<td style="text-align: left;"><code>UDim2</code></td>
+<td style="text-align: left;">The relative scale + absolute pixel offset dimensions vector.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>anchorX</code></td>
+<td style="text-align: left;"><code>AnchorX</code></td>
+<td style="text-align: left;">The horizontal pivot alignment anchor (<code>Left</code>, <code>Center</code>, <code>Right</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>anchorY</code></td>
+<td style="text-align: left;"><code>AnchorY</code></td>
+<td style="text-align: left;">The vertical pivot alignment anchor (<code>Top</code>, <code>Center</code>, <code>Bottom</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="public-methods">Public Methods</h3>
+<h4 id="getresolvedsize"><code>GetResolvedSize</code></h4>
+<p>Resolves the component's relative <code>size</code> (<code>UDim2</code>) into absolute pixel dimensions (<code>Vector2</code>) based on the dimensions of the parent container.</p>
+<pre><code class="language-csharp">public ArtTypes.Vector2 GetResolvedSize(ArtTypes.Vector2 parentSize)
+</code></pre>
+<hr />
+<h2 id="static-bootstrapper-engine">Static Bootstrapper: <code>Engine</code></h2>
+<p>The <code>Engine</code> class is the static entry point that manages the initialization and execution of the application.</p>
+<h3 id="public-methods_1">Public Methods</h3>
+<h4 id="runt"><code>Run&lt;T&gt;</code></h4>
+<p>Bootstraps the framework and runs the application. The generic argument <code>T</code> must implement <code>IArt</code> and expose a default constructor.</p>
+<pre><code class="language-csharp">public static void Run&lt;T&gt;() where T : IArt, new()
+</code></pre>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">class Program
+{
+    static void Main() =&gt; Engine.Run&lt;MyArtApp&gt;();
+}
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../getting-started/" class="btn btn-neutral float-left" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../core-types/" class="btn btn-neutral float-right" title="Core Types">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../getting-started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../core-types/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

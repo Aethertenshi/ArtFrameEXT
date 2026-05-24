@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Audio & Rhythm - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Audio \u0026 Rhythm";
+        var mkdocs_page_input_path = "audio-rhythm.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Audio & Rhythm</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#audio-engine-wrapper-audiohelpercs">Audio Engine Wrapper (AudioHelper.cs)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#master-properties">Master Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#core-audio-apis">Core Audio APIs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#loadmusic">LoadMusic</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#loadsfx">LoadSFX</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#playmusic-pausemusic-stopmusic">PlayMusic / PauseMusic / StopMusic</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#playsfx">PlaySFX</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#setmusicvolume-setsfxvolume">SetMusicVolume / SetSFXVolume</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#seekmusic">SeekMusic</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#latency-compensation-time-queries">Latency Compensation &amp; Time Queries</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#getmusiclength">GetMusicLength</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#getmusictimeplayed">GetMusicTimePlayed</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nightcore-speed-pitch-shifting">Nightcore Speed &amp; Pitch Shifting</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#setmusicspeed">SetMusicSpeed</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#smooth-audio-clock-interpolatingclockcs">Smooth Audio Clock (InterpolatingClock.cs)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#how-it-works">How it Works</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#metronome-beat-indexer-rythmtrackercs">Metronome Beat Indexer (RythmTracker.cs)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties">Public Properties</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#update">Update</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rhythm-controller-integration">Rhythm Controller Integration</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-events">Public Events</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties_1">Public Properties</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Audio & Rhythm Sync</li>
+      <li class="breadcrumb-item active">Audio & Rhythm</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="audio-rhythm-synchronization">Audio &amp; Rhythm Synchronization</h1>
+<p>ArtFrame features a professional, low-latency audio streaming and rhythm synchronization suite built on the <strong>BASS Audio Engine</strong>. This includes independent music/SFX control, Nightcore-style speed/pitch shifting, an interpolating audio clock that absorbs buffer jitter, and metronome beat indexers that synchronize to osu! beatmap timings.</p>
+<hr />
+<h2 id="audio-engine-wrapper-audiohelpercs">Audio Engine Wrapper (<code>AudioHelper.cs</code>)</h2>
+<p>The static <code>AudioHelper</code> handles streams, overlapping sample playbacks, master volumes, speed multipliers, and latency-compensated timings.</p>
+<h3 id="master-properties">Master Properties</h3>
+<ul>
+<li><code>AudioHelper.GlobalSFXVolume</code> (<code>float</code>): Master volume factor (0.0 to 1.0) applied dynamically to all active sound effects.</li>
+</ul>
+<h3 id="core-audio-apis">Core Audio APIs</h3>
+<h4 id="loadmusic"><code>LoadMusic</code></h4>
+<p>Loads a music track and establishes a <strong>decoding stream and an FX Tempo channel</strong> to allow real-time speed and pitch shifting.</p>
+<pre><code class="language-csharp">public static int LoadMusic(string musicName, string musicPath)
+</code></pre>
+<h4 id="loadsfx"><code>LoadSFX</code></h4>
+<p>Loads a sound effect sample. Configures the asset to allow up to <strong>32 overlapping concurrent playbacks</strong> without voice stealing.</p>
+<pre><code class="language-csharp">public static int LoadSFX(string soundName, string soundPath)
+</code></pre>
+<h4 id="playmusic-pausemusic-stopmusic"><code>PlayMusic</code> / <code>PauseMusic</code> / <code>StopMusic</code></h4>
+<p>Manages music playback states.</p>
+<pre><code class="language-csharp">public static void PlayMusic(string musicName, bool restart = true)
+</code></pre>
+<pre><code class="language-csharp">public static void PauseMusic(string musicName)
+</code></pre>
+<pre><code class="language-csharp">public static void StopMusic(string musicName)
+</code></pre>
+<h4 id="playsfx"><code>PlaySFX</code></h4>
+<p>Triggers an overlapping sound effect playback. The system automatically combines the sound's local volume with <code>GlobalSFXVolume</code>.</p>
+<pre><code class="language-csharp">public static void PlaySFX(string soundName)
+</code></pre>
+<h4 id="setmusicvolume-setsfxvolume"><code>SetMusicVolume</code> / <code>SetSFXVolume</code></h4>
+<p>Sets individual volume parameters (0.0 to 1.0).</p>
+<pre><code class="language-csharp">public static void SetMusicVolume(string musicName, float volume)
+</code></pre>
+<pre><code class="language-csharp">public static void SetSFXVolume(string sfxName, float volume)
+</code></pre>
+<h4 id="seekmusic"><code>SeekMusic</code></h4>
+<p>Seeks music playback to the specified absolute position in seconds.</p>
+<pre><code class="language-csharp">public static void SeekMusic(string musicName, float position)
+</code></pre>
+<hr />
+<h3 id="latency-compensation-time-queries">Latency Compensation &amp; Time Queries</h3>
+<p>Standard audio engines report playback positions based on raw buffer blocks, resulting in "jumpy" or chunky updates that lag behind actual audio output. ArtFrame fixes this:</p>
+<h4 id="getmusiclength"><code>GetMusicLength</code></h4>
+<p>Returns the absolute duration of the music track in seconds.</p>
+<pre><code class="language-csharp">public static float GetMusicLength(string musicName)
+</code></pre>
+<h4 id="getmusictimeplayed"><code>GetMusicTimePlayed</code></h4>
+<p>Returns the <strong>latency-compensated</strong> playback position in seconds.</p>
+<pre><code class="language-csharp">public static float GetMusicTimePlayed(string musicName)
+</code></pre>
+<ul>
+<li><strong>How it works:</strong> This query extracts the current decoder position and subtracts the native audio device latency (<code>_audioLatency</code> calculated at initialization):
+    $$\text{Compensated Time} = \text{Raw Decode Time} - \text{Device Latency}$$
+    This yields a precise, clean timeline that aligns perfectly with audio output.</li>
+</ul>
+<hr />
+<h3 id="nightcore-speed-pitch-shifting">Nightcore Speed &amp; Pitch Shifting</h3>
+<p><code>AudioHelper</code> provides real-time speed control with optional pitch adjustments.</p>
+<h4 id="setmusicspeed"><code>SetMusicSpeed</code></h4>
+<p>Adjusts the speed multiplier of the music stream.</p>
+<pre><code class="language-csharp">public static void SetMusicSpeed(string musicName, float speedMultiplier, bool adjustPitch = false)
+</code></pre>
+<ul>
+<li><strong>Parameters:</strong><ul>
+<li><code>speedMultiplier</code>: The playback speed ratio (e.g. <code>1.5f</code> for 1.5x speed, <code>0.75f</code> for 75% speed).</li>
+<li><code>adjustPitch</code>:<ul>
+<li>If <code>false</code>, <strong>pitch-correction is enabled</strong>. The music plays faster or slower but stays in its original key.</li>
+<li>If <code>true</code>, <strong>pitch scales with speed (Nightcore style)</strong>. The pitch is shifted in semitones according to the speed multiplier:
+    $$\text{Semitone Shift} = 12 \times \log_2(\text{Speed Multiplier})$$
+    At <code>1.5x</code> speed, this shifts the pitch up by approximately <strong>7.02 semitones</strong> (a perfect fifth), matching classic arcade speed-up effects.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="smooth-audio-clock-interpolatingclockcs">Smooth Audio Clock (<code>InterpolatingClock.cs</code>)</h2>
+<p>The <code>InterpolatingAudioClock</code> filters the coarse timing updates of the audio hardware to provide an ultra-smooth time signal suitable for rendering fluid visuals and checking beat boundaries.</p>
+<h3 id="how-it-works">How it Works</h3>
+<ol>
+<li>On every frame, the clock advances its internal high-resolution timer (<code>CurrentTime</code>) by the frame's delta time (<code>dt</code>).</li>
+<li>When the audio hardware reports a new time step (<code>rawBassTime != _lastBassTime</code>), the clock calculates the drift:
+    $$\text{Drift} = \text{Raw Hardware Time} - \text{CurrentTime}$$</li>
+<li>If the drift exceeds <code>SnapThreshold</code> (20 milliseconds, indicating a manual seek or a system lag spike), the clock snaps <code>CurrentTime</code> directly to the hardware time.</li>
+<li>If the drift is small (normal hardware timing jitter), the clock applies a <strong>50% correction filter</strong>:
+    $$\text{CurrentTime} \leftarrow \text{CurrentTime} + (\text{Drift} \times 0.5)$$
+    This acts as a visual shock absorber, smoothing out buffer jumps into a continuous, fluid signal.</li>
+</ol>
+<hr />
+<h2 id="metronome-beat-indexer-rythmtrackercs">Metronome Beat Indexer (<code>RythmTracker.cs</code>)</h2>
+<p>The <code>RhythmTracker</code> analyzes millisecond timestamps against an array of parsed BPM timing points to determine the active beat state.</p>
+<h3 id="public-properties">Public Properties</h3>
+<ul>
+<li><code>CurrentBeatIndex</code> (<code>int</code>): A strictly increasing integer index representing the absolute beat number since the start of the song.</li>
+<li><code>BeatProgress</code> (<code>float</code>): A normalized value (0.0 to 1.0) indicating the progress through the current beat. Perfect for scaling pulses, flashes, and size bumps on the beat.</li>
+<li><code>IsDownbeat</code> (<code>bool</code>): Returns <code>true</code> if the current beat falls on the first beat of the measure (e.g. Beat 0, 4, 8...).</li>
+</ul>
+<h4 id="update"><code>Update</code></h4>
+<p>Processes the timeline and updates the metronome state.</p>
+<pre><code class="language-csharp">public void Update(float musicTimeMs, IEnumerable&lt;OsuTimingPoint&gt; bpmPoints)
+</code></pre>
+<hr />
+<h2 id="rhythm-controller-integration">Rhythm Controller Integration</h2>
+<p>The <code>RhythmIndexer</code> is a helper class that combines the interpolating clock and the rhythm tracker into an active component. It is registered in the engine pool and exposes event hooks.</p>
+<h3 id="public-events">Public Events</h3>
+<ul>
+<li><code>OnBeat</code> (<code>Action&lt;int&gt;</code>): Fires on the exact frame the beat index advances. Receives the <code>CurrentBeatIndex</code>.</li>
+<li><code>OnDownbeat</code> (<code>Action&lt;int&gt;</code>): Fires on the exact frame a new measure begins.</li>
+</ul>
+<h3 id="public-properties_1">Public Properties</h3>
+<ul>
+<li><code>MusicOffset</code> (<code>float</code>): Global calibration offset in milliseconds (defaults to <code>-33f</code> to align visual frames with audio transients).</li>
+<li>
+<p><code>CurrentProgress</code> (<code>float</code>): The smooth, offset-adjusted millisecond timeline used for hit object positions.</p>
+</li>
+<li>
+<p><strong>Example metronome setup:</strong></p>
+</li>
+</ul>
+<pre><code class="language-csharp">using ArtFrame;
+using ArtFrame.RythmModule;
+
+public class MetronomeApp : IArt
+{
+    private RhythmIndexer _metronome;
+
+    public void Setup()
+    {
+        AudioHelper.LoadMusic(&quot;song&quot;, &quot;audio/beat.mp3&quot;);
+
+        // 1. Initialize the rhythm controller
+        var clock = new InterpolatingAudioClock();
+        var tracker = new RhythmTracker();
+        _metronome = new RhythmIndexer(clock, tracker, () =&gt; AudioHelper.GetMusicTimePlayed(&quot;song&quot;));
+
+        // 2. Subscribe to metronome events
+        _metronome.OnBeat += OnBeatPressed;
+        _metronome.OnDownbeat += OnMeasurePressed;
+
+        // 3. Register to global update pipeline
+        RythmHelper.AddHelper(_metronome);
+
+        AudioHelper.PlayMusic(&quot;song&quot;);
+    }
+
+    private void OnBeatPressed(int beatIndex)
+    {
+        Console.WriteLine($&quot;Beat: {beatIndex}&quot;);
+    }
+
+    private void OnMeasurePressed(int beatIndex)
+    {
+        Console.WriteLine($&quot;--- New Measure Started ---&quot;);
+    }
+}
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../fonts-rendering/" class="btn btn-neutral float-left" title="MTSDF Font Rendering"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../ui-components/" class="btn btn-neutral float-right" title="UI Basics (Frames & Buttons)">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../fonts-rendering/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../ui-components/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

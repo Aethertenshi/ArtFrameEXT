@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>ArtFrame Documentation</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Introduction";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Introduction</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#what-is-artframe">What is ArtFrame?</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#key-capabilities">Key Capabilities</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#legal-licensing-notice">Legal &amp; Licensing Notice</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-bass-audio-engine-commercial-restriction">1. BASS Audio Engine (Commercial Restriction)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-microsoft-fna">2. Microsoft FNA</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-artframe-framework">3. ArtFrame Framework</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#overview-of-documentation-sections">Overview of Documentation Sections</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ui-modifiers/">Layout Modifiers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Introduction</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="welcome-to-artframe">Welcome to ArtFrame</h1>
+<p><strong>ArtFrame</strong> is a lightweight, high-performance 2D game and interactive art framework for C#, built on top of the Microsoft FNA graphics library. It is designed to get creative projects, games, and interactive rhythm-based installations running quickly — with a declarative UI system, a powerful tween engine, rhythm-aware audio tools, and Multi-channel Signed Distance Field (MTSDF) font rendering all included out of the box.</p>
+<hr />
+<h2 id="what-is-artframe">What is ArtFrame?</h2>
+<p>ArtFrame bridges the gap between low-level graphics frameworks and high-level game engines. By leveraging <strong>Microsoft FNA</strong> (an accurate open-source re-implementation of the XNA 4.0 Refresh), ArtFrame runs with exceptional stability and speed on Windows, macOS, and Linux.</p>
+<p>It introduces developer-friendly layers that eliminate the boilerplate of standard game loops, drawing routines, and asset management, replacing them with modern declarative layouts, smooth easing functions, and latency-compensated rhythm indexing.</p>
+<h3 id="key-capabilities">Key Capabilities</h3>
+<ul>
+<li><strong>Declarative UI System</strong> — Roblox- and CSS-inspired vector-driven interface trees including nested containers, aspect-ratio controls, text inputs, sliders, and automatic alignment modifiers.</li>
+<li><strong>Tweener Easing Engine</strong> — 11 smooth easing curves supporting In, Out, and In-Out directions to animate variables fluidly without snapping.</li>
+<li><strong>Multi-Channel Signed Distance Field (MTSDF) Fonts</strong> — Razor-sharp, resolution-independent text at any scale with outline/stroke overlays and precise bounding measurements.</li>
+<li><strong>High-Precision Rhythm Indexing</strong> — Precise beat-tracking metronomes and an interpolating audio clock that absorbs buffer latency, synchronized with full <strong>osu! beatmap (.osu)</strong> files.</li>
+<li><strong>Audio Engine</strong> — High-quality music streaming with tempo-scaling and pitch-shifting (Nightcore style), overlapping SFX sample management, and individual channel attributes powered by BASS.</li>
+<li><strong>Native Drag-and-Drop</strong> — Real-time drag-and-drop file hooks (e.g. dragging <code>.osz</code> archives directly onto the game window) built directly on SDL3 events.</li>
+<li><strong>Framerate Suppressed Game Loop</strong> — Separated logic updates and render ticks allowing raw input to process at high frequencies while avoiding unnecessary overdraw.</li>
+</ul>
+<hr />
+<h2 id="legal-licensing-notice">Legal &amp; Licensing Notice</h2>
+<p>ArtFrame is open-source, but it is built on top of third-party libraries that carry specific licensing obligations. Please read this notice carefully before building or distributing products with ArtFrame.</p>
+<h3 id="1-bass-audio-engine-commercial-restriction">1. BASS Audio Engine (Commercial Restriction)</h3>
+<ul>
+<li><strong>Audio streaming and effect features are powered by the BASS Audio Library (by Un4seen Developments).</strong></li>
+<li>BASS is <strong>free for non-commercial use only</strong>.</li>
+<li>If you distribute ArtFrame in a commercial product, you <strong>must purchase a BASS commercial license</strong> directly from Un4seen Developments. See <a href="https://www.un4seen.com/">Un4seen Developments</a> for pricing and terms.</li>
+<li>The C# wrapper bindings are provided by <strong>ManagedBass</strong> and <strong>ManagedBass.Fx</strong>, which are licensed under the MIT License.</li>
+</ul>
+<h3 id="2-microsoft-fna">2. Microsoft FNA</h3>
+<ul>
+<li>FNA is licensed under the <strong>Microsoft Public License (Ms-PL)</strong>. You must include the FNA license in distributions containing its binaries.</li>
+</ul>
+<h3 id="3-artframe-framework">3. ArtFrame Framework</h3>
+<ul>
+<li>The core ArtFrame source code is licensed under the <strong>MIT License</strong>, permitting unrestricted non-commercial use, modification, and integration.</li>
+</ul>
+<hr />
+<h2 id="overview-of-documentation-sections">Overview of Documentation Sections</h2>
+<ul>
+<li><strong><a href="getting-started/">Getting Started</a></strong>: System prerequisites and setting up your first project.</li>
+<li><strong><a href="engine/">Core Engine</a></strong>: Structure of the game loop, object hierarchies, and suppression.</li>
+<li><strong><a href="core-types/">Core Types</a></strong>: Color HEX parsing, <code>UDim2</code> vectors, and alignments.</li>
+<li><strong><a href="input-helpers/">Input &amp; File Drop</a></strong>: Input managers and SDL3 drag-and-drop systems.</li>
+<li><strong><a href="graphics-primitives/">Graphics &amp; Tweens</a></strong>: Easing curves, tweens, window parameters, and shaders.</li>
+<li><strong><a href="fonts-rendering/">MTSDF Fonts</a></strong>: Signed distance text rendering, sizing, and outline strokes.</li>
+<li><strong><a href="audio-rhythm/">Audio &amp; Rhythm Sync</a></strong>: Audio streams, latency absorption, and beat tracker indexing.</li>
+<li><strong><a href="ui-components/">User Interface System</a></strong>: Basic and advanced components (Frames, Sliders, TextBoxes, Effect targets).</li>
+<li><strong><a href="osu-beatmaps/">osu! Beatmaps</a></strong>: Complete parsing and loading of <code>.osu</code> files and hit object models.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="getting-started/" class="btn btn-neutral float-right" title="Getting Started">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="getting-started/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2026-05-24 22:48:12.887946+00:00
+-->

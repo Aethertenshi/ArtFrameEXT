@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Layout Modifiers - ArtFrame Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Layout Modifiers";
+        var mkdocs_page_input_path = "ui-modifiers.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ArtFrame Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Core Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../engine/">Core Engine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../core-types/">Core Types</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-helpers/">Input & File Drop</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Graphics & Tweens</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../graphics-primitives/">Graphics & Animation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fonts-rendering/">MTSDF Font Rendering</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Audio & Rhythm Sync</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../audio-rhythm/">Audio & Rhythm</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Interface System</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-components/">UI Basics (Frames & Buttons)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ui-advanced-components/">Advanced UI Components</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Layout Modifiers</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-linear-stacking-listlayout">1. Linear Stacking (ListLayout)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties">Public Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#vertical-layout-positioning-logic">Vertical Layout Positioning Logic</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-table-grid-layout-gridlayout">2. Table Grid Layout (GridLayout)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#public-properties_1">Public Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#grid-layout-positioning-logic">Grid Layout Positioning Logic</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">osu! Beatmap Integration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../osu-beatmaps/">Beatmap Parsing & Models</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ArtFrame Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">User Interface System</li>
+      <li class="breadcrumb-item active">Layout Modifiers</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="layout-modifiers-uimodifierscs">Layout Modifiers (<code>UIModifiers.cs</code>)</h1>
+<p>Layout modifiers are dedicated layout algorithms that implement the <code>IFrameModifier</code> interface. When added to a frame's <code>modifiers</code> list, they automatically calculate and override the spatial coordinates and dimensions of the nested children on every frame, eliminating the need to position elements manually.</p>
+<hr />
+<h2 id="1-linear-stacking-listlayout">1. Linear Stacking (<code>ListLayout</code>)</h2>
+<p><code>ListLayout</code> positions child elements in a sequential line, either vertically or horizontally. It includes options for spacing, padding, and cross-axis alignment.</p>
+<h3 id="public-properties">Public Properties</h3>
+<ul>
+<li><code>direction</code> (<code>Axis</code>): The stacking axis.<ul>
+<li><code>Axis.Vertical</code> — Stacks children in a column.</li>
+<li><code>Axis.Horizontal</code> — Stacks children in a row.</li>
+</ul>
+</li>
+<li><code>controlCrossAxis</code> (<code>bool</code>):<ul>
+<li>If <code>true</code>, the layout manages positioning along the cross-axis (e.g. horizontal alignment in a vertical list).</li>
+<li>If <code>false</code>, children retain their pre-defined position coordinates along the cross-axis.</li>
+</ul>
+</li>
+<li><code>spacing</code> (<code>float</code>): Pixel gap between consecutive child elements.</li>
+<li><code>paddingX</code> / <code>paddingY</code> (<code>float</code>): Absolute border padding inside the container.</li>
+<li><code>horizontalAlign</code> (<code>HAlign</code>): Horizontal alignment along the cross-axis (<code>HAlign.Left</code>, <code>HAlign.Center</code>, <code>HAlign.Right</code>).</li>
+<li><code>verticalAlign</code> (<code>VAlign</code>): Vertical alignment along the cross-axis (<code>VAlign.Top</code>, <code>VAlign.Center</code>, <code>VAlign.Bottom</code>).</li>
+</ul>
+<hr />
+<h3 id="vertical-layout-positioning-logic">Vertical Layout Positioning Logic</h3>
+<p>When <code>direction</code> is set to <code>Axis.Vertical</code>, <code>ListLayout</code> executes the following positioning sequence:
+1.  It sums the resolved heights of all active children and adds the spacing offsets to calculate the total combined height:
+    <code>Total Height = sum(ChildHeight) + spacing * (Count - 1)</code>
+2.  It positions the starting cursor based on <code>verticalAlign</code>:
+    *   <code>VAlign.Center</code> starts at: <code>StartY = (ParentHeight - Total Height) / 2</code>
+    *   <code>VAlign.Bottom</code> starts at: <code>StartY = ParentHeight - Total Height - paddingY</code>
+    *   <code>VAlign.Top</code> starts at <code>paddingY</code>.
+3.  It iterates through the children, forcing their anchors to <code>AnchorX.Left</code> and <code>AnchorY.Top</code> to ensure unambiguous positioning.
+4.  If <code>controlCrossAxis</code> is active, it aligns the horizontal position of each child based on <code>horizontalAlign</code>:
+    *   <code>HAlign.Center</code> sets: <code>x = (ParentWidth - ChildWidth) / 2</code>
+    *   <code>HAlign.Right</code> sets: <code>x = ParentWidth - ChildWidth - paddingX</code>
+    *   <code>HAlign.Left</code> sets <code>x = paddingX</code>.
+5.  It sets the child's position to <code>(x, cursor)</code> and increments the cursor for the next element:
+    <code>cursor = cursor + ChildHeight + spacing</code></p>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">var menuFrame = new Frame { size = UDim2.FromScale(0.3f, 0.6f) };
+
+// Set up a vertical list layout with center-aligned elements
+menuFrame.modifiers.Add(new ListLayout
+{
+    direction = Axis.Vertical,
+    spacing = 8f,
+    paddingY = 15f,
+    horizontalAlign = HAlign.Center,
+    verticalAlign = VAlign.Top,
+    controlCrossAxis = true
+});
+
+// Add buttons (ListLayout will position them automatically!)
+menuFrame.children.Add(new Button { size = UDim2.FromOffset(120, 35) });
+menuFrame.children.Add(new Button { size = UDim2.FromOffset(120, 35) });
+menuFrame.children.Add(new Button { size = UDim2.FromOffset(120, 35) });
+</code></pre>
+<hr />
+<h2 id="2-table-grid-layout-gridlayout">2. Table Grid Layout (<code>GridLayout</code>)</h2>
+<p><code>GridLayout</code> arranges child elements in uniform rows and columns.</p>
+<h3 id="public-properties_1">Public Properties</h3>
+<ul>
+<li><code>columns</code> (<code>int</code>): The number of columns in the grid.</li>
+<li><code>spacingX</code> / <code>spacingY</code> (<code>float</code>): The pixel spacing between cells.</li>
+<li><code>paddingX</code> / <code>paddingY</code> (<code>float</code>): Absolute border padding inside the container.</li>
+<li><code>cellSize</code> (<code>Vector2</code>):<ul>
+<li>If set to a positive size, cells use these absolute dimensions.</li>
+<li>If set to <code>Vector2.Zero</code>, <strong>cells are auto-sized</strong> to divide the horizontal container width evenly among the columns:
+    <code>CellWidth = (ParentWidth - (paddingX * 2) - spacingX * (columns - 1)) / columns</code>
+    <code>CellHeight = CellWidth</code> (square aspect ratio)</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="grid-layout-positioning-logic">Grid Layout Positioning Logic</h3>
+<p>For every child at index <code>i</code> in the list, <code>GridLayout</code> calculates its grid position:
+1.  Determines the column and row index:
+    *   <code>col = i % columns</code>
+    *   <code>row = i / columns</code>
+2.  Calculates the cell's coordinates:
+    *   <code>x = paddingX + col * (CellWidth + spacingX)</code>
+    *   <code>y = paddingY + row * (CellHeight + spacingY)</code>
+3.  Overrides the child's position to <code>UDim2.FromOffset(x, y)</code> and its size to <code>UDim2.FromOffset(CellWidth, CellHeight)</code>.</p>
+<ul>
+<li><strong>Example Usage:</strong></li>
+</ul>
+<pre><code class="language-csharp">var gridFrame = new Frame { size = UDim2.FromOffset(400, 400) };
+
+// Arrange child elements in a 3-column grid
+gridFrame.modifiers.Add(new GridLayout
+{
+    columns = 3,
+    spacingX = 6f,
+    spacingY = 6f,
+    paddingX = 10f,
+    paddingY = 10f,
+    cellSize = Vector2.Zero // Auto-sizes cells to fit columns
+});
+
+// Add elements
+for (int i = 0; i &lt; 9; i++)
+{
+    gridFrame.children.Add(new Frame());
+}
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../ui-advanced-components/" class="btn btn-neutral float-left" title="Advanced UI Components"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../osu-beatmaps/" class="btn btn-neutral float-right" title="Beatmap Parsing & Models">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../ui-advanced-components/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../osu-beatmaps/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
