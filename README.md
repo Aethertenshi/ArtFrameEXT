@@ -1,7 +1,7 @@
 # 🎨 ArtFrame
 
 [![.NET Version](https://img.shields.io/badge/.NET-8.0%2B-blueviolet?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
-[![Engine](https://img.shields.io/badge/Graphics-Microsoft%20FNA-orange?style=for-the-badge&logo=monogame)](https://fna-xna.github.io/)
+[![Engine](https://img.shields.io/badge/Graphics-Microsoft%20FNA-orange?style=for-the-badge)](https://fna-xna.github.io/)
 [![Audio](https://img.shields.io/badge/Audio-BASS%20Engine-brightgreen?style=for-the-badge)](https://www.un4seen.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
