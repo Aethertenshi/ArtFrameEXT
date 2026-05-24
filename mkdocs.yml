@@ -1,0 +1,23 @@
+site_name: ArtFrame Documentation
+theme:
+  name: readthedocs
+  highlightjs: true
+
+nav:
+  - Introduction: index.md
+  - Getting Started: getting-started.md
+  - Core Modules:
+      - Core Engine: engine.md
+      - Core Types: core-types.md
+      - Input & File Drop: input-helpers.md
+  - Graphics & Tweens:
+      - Graphics & Animation: graphics-primitives.md
+      - MTSDF Font Rendering: fonts-rendering.md
+  - Audio & Rhythm Sync:
+      - Audio & Rhythm: audio-rhythm.md
+  - User Interface System:
+      - UI Basics (Frames & Buttons): ui-components.md
+      - Advanced UI Components: ui-advanced-components.md
+      - Layout Modifiers: ui-modifiers.md
+  - osu! Beatmap Integration:
+      - Beatmap Parsing & Models: osu-beatmaps.md
