@@ -157,6 +157,9 @@ namespace OsuLib
 
             foreach (var obj in HitObjects.OfType<OsuSlider>())
             {
+                // Holds already carry a real DurationMs; the slider-velocity math doesn't apply.
+                if (obj.ObjectType == HitObjectType.Hold) continue;
+
                 // Active uninherited point → gives us beatLength (ms per beat)
                 var redLine = GetTimingPointAt(obj.Time, uninheritedOnly: true);
                 if (redLine == null) continue;
