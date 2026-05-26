@@ -202,6 +202,10 @@ namespace OsuLib
             obj.IsNewCombo = isNewCombo;
             obj.ComboSkip  = comboSkip;
 
+            // ParseHold stashed the absolute end time in DurationMs; convert to a real duration now that Time is set.
+            if ((type & TYPE_HOLD) != 0 && obj is OsuSlider hold)
+                hold.DurationMs = Math.Max(0, hold.DurationMs - time);
+
             return obj;
         }
 
