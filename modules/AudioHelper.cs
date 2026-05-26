@@ -1,4 +1,4 @@
-﻿using ManagedBass;
+using ManagedBass;
 using ManagedBass.Fx;
 using ArtFrame.RythmModule;
 using OsuLib;

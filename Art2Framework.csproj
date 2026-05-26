@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <Reference Include="FNA">
-      <HintPath>..\FNA\bin\Debug\net8.0\FNA.dll</HintPath>
+      <HintPath>FNA.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -24,6 +24,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="bass_fx.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FNA.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="FNA3D.dll">
