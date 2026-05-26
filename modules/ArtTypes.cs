@@ -1,4 +1,4 @@
-﻿using ManagedBass.Fx;
+using ManagedBass.Fx;
 using Microsoft.Xna.Framework;
 using System.Drawing;
 using System.Runtime.Intrinsics.X86;
@@ -87,10 +87,10 @@ namespace ArtFrame.ArtTypes
         );
 
         // Operator Overloads
-        public static UDim2 operator +(UDim2 a, UDim2 b) => new UDim2(a.ScaleX + b.ScaleX, a.ScaleY + b.ScaleY, a.OffsetX + b.OffsetX, a.OffsetX + b.OffsetX);
-        public static UDim2 operator -(UDim2 a, UDim2 b) => new UDim2(a.ScaleX + b.ScaleX, a.ScaleY + b.ScaleY, a.OffsetX + b.OffsetX, a.OffsetX + b.OffsetX);
-        public static UDim2 operator *(UDim2 a, float scalar) => new UDim2(a.ScaleX * scalar, a.ScaleY * scalar, a.OffsetX * scalar, a.OffsetX * scalar);
-        public static UDim2 operator /(UDim2 a, float scalar) => new UDim2(a.ScaleX / scalar, a.ScaleY / scalar, a.OffsetX / scalar, a.OffsetX / scalar);
+        public static UDim2 operator +(UDim2 a, UDim2 b) => new UDim2(a.ScaleX + b.ScaleX, a.ScaleY + b.ScaleY, a.OffsetX + b.OffsetX, a.OffsetY + b.OffsetY);
+        public static UDim2 operator -(UDim2 a, UDim2 b) => new UDim2(a.ScaleX - b.ScaleX, a.ScaleY - b.ScaleY, a.OffsetX - b.OffsetX, a.OffsetY - b.OffsetY);
+        public static UDim2 operator *(UDim2 a, float scalar) => new UDim2(a.ScaleX * scalar, a.ScaleY * scalar, a.OffsetX * scalar, a.OffsetY * scalar);
+        public static UDim2 operator /(UDim2 a, float scalar) => new UDim2(a.ScaleX / scalar, a.ScaleY / scalar, a.OffsetX / scalar, a.OffsetY / scalar);
 
         // Convenience shorthands
         public static UDim2 Lerp(UDim2 a, UDim2 b, float t) => new UDim2(
