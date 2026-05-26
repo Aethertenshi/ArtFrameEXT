@@ -1,4 +1,4 @@
-﻿using ArtFrame;
+using ArtFrame;
 using ArtFrame.ArtTypes;
 using ArtFrame.Easings;
 using ArtFrame.UIModifier;
@@ -20,7 +20,8 @@ namespace ArtFrame.UserInterface
 
         public Action<Frame, float>? onUpdate { get; set; }
 
-        private Texture2D pixel = Texture2D.CreateSinglePixel(Color.White);
+        private static Texture2D? _sharedPixel;
+        private Texture2D pixel => _sharedPixel ??= Texture2D.CreateSinglePixel(Color.White);
 
         public override void Update(float dt)
         {

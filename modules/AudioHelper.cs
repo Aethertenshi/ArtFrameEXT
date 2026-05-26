@@ -267,9 +267,11 @@ namespace ArtFrame
 
             public void Update(float dt)
             {
+                if (Beatmap == null) return;
+
                 float rawBassTimeSeconds = _getRawMusicTime();
 
-                // Let the InterpolatingAudioClock handle the BASS latency natively[cite: 15]
+                // Let the InterpolatingAudioClock handle the BASS latency natively
                 _audioClock.Update(rawBassTimeSeconds, dt, isAudioPlaying: true);
 
                 float smoothMusicTimeMs = (_audioClock.CurrentTime * 1000f) - MusicOffset;

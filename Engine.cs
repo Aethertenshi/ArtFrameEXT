@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static ArtFrame.EffectsHelper;
 using static ArtFrame.InputHelper;
@@ -150,7 +150,7 @@ namespace ArtFrame
             if (RythmHelper.helperPool.Count > 0)
             {
                 foreach (var helper in RythmHelper.helperPool)
-                    helper.Update(dt);
+                    helper?.Update(dt);
             }
 
 
