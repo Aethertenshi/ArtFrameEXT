@@ -1,4 +1,5 @@
-﻿using OsuLib.Models;
+using System;
+using System.Collections.Generic;
 
 namespace ArtFrame.RythmModule
 {
@@ -13,13 +14,13 @@ namespace ArtFrame.RythmModule
         /// <summary>True if the current beat is the first beat of the measure (the downbeat).</summary>
         public bool IsDownbeat { get; private set; }
 
-        public void Update(float musicTimeMs, IEnumerable<OsuTimingPoint> bpmPoints)
+        public void Update(float musicTimeMs, ControlPointInfo controlPoints)
         {
-            OsuTimingPoint activeRedLine = null;
+            TimingControlPoint? activeRedLine = null;
             int priorWholeBeats = 0;
 
             // 1. Find the active red line and sum up the WHOLE beats of previous sections
-            foreach (var tp in bpmPoints)
+            foreach (var tp in controlPoints.TimingPoints)
             {
                 if (tp.Time > musicTimeMs)
                     break;

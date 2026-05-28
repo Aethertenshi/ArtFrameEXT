@@ -91,7 +91,54 @@ namespace OsuLib
 
                     case "TimingPoints":
                         var tp = ParseTimingPoint(line);
-                        if (tp != null) beatmap.TimingPoints.Add(tp);
+                        if (tp != null)
+                        {
+                            beatmap.TimingPoints.Add(tp);
+
+                            // Decoupled Control Points alignment with osu!lazer
+                            if (tp.IsUninherited)
+                            {
+                                beatmap.ControlPoints.TimingPoints.Add(new ArtFrame.RythmModule.TimingControlPoint
+                                {
+                                    Time = tp.Time,
+                                    BeatLength = tp.BeatLength,
+                                    Meter = tp.Meter
+                                });
+
+                                // Red lines reset speed multiplier back to 1.0 (default velocity multiplier)
+                                beatmap.ControlPoints.DifficultyPoints.Add(new ArtFrame.RythmModule.DifficultyControlPoint
+                                {
+                                    Time = tp.Time,
+                                    SpeedMultiplier = 1.0
+                                });
+                            }
+                            else
+                            {
+                                // Green lines modify velocity multiplier
+                                beatmap.ControlPoints.DifficultyPoints.Add(new ArtFrame.RythmModule.DifficultyControlPoint
+                                {
+                                    Time = tp.Time,
+                                    SpeedMultiplier = -100.0 / tp.BeatLength
+                                });
+                            }
+
+                            // Sound point
+                            beatmap.ControlPoints.SoundPoints.Add(new ArtFrame.RythmModule.SoundControlPoint
+                            {
+                                Time = tp.Time,
+                                Volume = tp.Volume,
+                                SampleSet = tp.SampleSet,
+                                SampleIndex = tp.SampleIndex
+                            });
+
+                            // Effect point
+                            beatmap.ControlPoints.EffectPoints.Add(new ArtFrame.RythmModule.EffectControlPoint
+                            {
+                                Time = tp.Time,
+                                IsKiai = tp.IsKiai,
+                                OmitFirstBarLine = (tp.Effects & 8) != 0
+                            });
+                        }
                         break;
 
                     case "HitObjects":
@@ -104,6 +151,12 @@ namespace OsuLib
             // Sort by time (the file should already be sorted, but just in case)
             beatmap.TimingPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
             beatmap.HitObjects.Sort((a, b) => a.Time.CompareTo(b.Time));
+
+            // Decoupled lists sorting
+            beatmap.ControlPoints.TimingPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
+            beatmap.ControlPoints.DifficultyPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
+            beatmap.ControlPoints.SoundPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
+            beatmap.ControlPoints.EffectPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
 
             // Fill slider velocity / duration
             beatmap.ResolveSliderVelocities();

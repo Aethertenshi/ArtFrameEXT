@@ -275,7 +275,7 @@ namespace ArtFrame
                 _audioClock.Update(rawBassTimeSeconds, dt, isAudioPlaying: true);
 
                 float smoothMusicTimeMs = (_audioClock.CurrentTime * 1000f) - MusicOffset;
-                _rhythmTracker.Update(smoothMusicTimeMs, Beatmap.BpmPoints);
+                _rhythmTracker.Update(smoothMusicTimeMs, Beatmap.ControlPoints);
 
                 // Cache current state
                 CurrentBeatIndex = _rhythmTracker.CurrentBeatIndex;

@@ -287,7 +287,8 @@ namespace ArtFrame.UserInterface
         public Action<Button>? onHoverExit { get; set; }
 
         private Rectangle _hitbox;
-        private Texture2D _pixel = Texture2D.CreateSinglePixel(Color.White);
+        private static Texture2D? _sharedPixel;
+        private Texture2D _pixel => _sharedPixel ??= Texture2D.CreateSinglePixel(Color.White);
 
         public override void Update(float dt)
         {
@@ -374,7 +375,7 @@ namespace ArtFrame.UserInterface
         public List<IFrameModifier> modifiers { get; set; } = new();
 
         // — Events —
-        public Action<ImageButton>? onUpdate { get; set; }
+        public Action<ImageButton, float>? onUpdate { get; set; }
         public Action<ImageButton>? onClick { get; set; }
         public Action<ImageButton>? onHoverEnter { get; set; }
         public Action<ImageButton>? onHoverExit { get; set; }
@@ -395,7 +396,7 @@ namespace ArtFrame.UserInterface
                 onClick?.Invoke(this);
             }
 
-            onUpdate?.Invoke(this);
+            onUpdate?.Invoke(this, dt);
             foreach (var child in children)
                 child.Update(dt);
         }
@@ -407,23 +408,36 @@ namespace ArtFrame.UserInterface
 
             Vector2 anchorOffset = GraphicsHelper.GetAnchorOffset(anchorX, anchorY, resolvedSize);
             Vector2 topLeft = resolvedPos - anchorOffset;
+            Vector2 objectCenter = topLeft + resolvedSize / 2f; // pivot for rotation and scaling
 
             _hitbox = new Rectangle((int)topLeft.X, (int)topLeft.Y, (int)resolvedSize.X, (int)resolvedSize.Y);
 
             Image activeTex = IsPressed ? (pressedImage ?? texture)
                               : IsHovered ? (hoverImage ?? texture)
                               : texture;
-            float activeAlpha = IsPressed ? pressedAlpha
+
+            // Fix alpha override: multiply hovered/pressed modifiers by the base alpha
+            float activeAlpha = alpha * (IsPressed ? pressedAlpha
                               : IsHovered ? hoverAlpha
-                              : alpha;
+                              : 1f);
 
             Color tint = new Color(color.R, color.G, color.B, (byte)(activeAlpha * 255f));
-            Rectangle targetRect = new Rectangle((int)topLeft.X, (int)topLeft.Y, (int)resolvedSize.X, (int)resolvedSize.Y);
+            float radians = Microsoft.Xna.Framework.MathHelper.ToRadians(rotation);
 
             if (fit == ObjectFit.Cover)
-                Art.Instance.spriteBatch.Draw(activeTex, targetRect, ComputeCoverSrc(targetRect, activeTex), tint);
+            {
+                Rectangle srcRect = ComputeCoverSrc(new Rectangle(0, 0, (int)resolvedSize.X, (int)resolvedSize.Y), activeTex);
+                Vector2 pivot = new Vector2(srcRect.Width / 2f, srcRect.Height / 2f);
+                Vector2 scale = new Vector2(resolvedSize.X / srcRect.Width, resolvedSize.Y / srcRect.Height);
+                Art.Instance.spriteBatch.Draw(activeTex, objectCenter, srcRect, tint, radians, pivot, scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
+            }
             else
-                Art.Instance.spriteBatch.Draw(activeTex, ComputeDestRect(topLeft, resolvedSize, activeTex), tint);
+            {
+                Rectangle destRect = ComputeDestRect(topLeft, resolvedSize, activeTex);
+                Vector2 pivot = new Vector2(activeTex.Width / 2f, activeTex.Height / 2f);
+                Vector2 scale = new Vector2((float)destRect.Width / activeTex.Width, (float)destRect.Height / activeTex.Height);
+                Art.Instance.spriteBatch.Draw(activeTex, objectCenter, null, tint, radians, pivot, scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
+            }
 
             // Pass this frame's top-left corner as the origin for children
             Vector2 frameTopLeft = resolvedPos - anchorOffset;
@@ -433,6 +447,7 @@ namespace ArtFrame.UserInterface
             foreach (var child in children)
                 child.Draw(dt, resolvedSize, frameTopLeft);
         }
+
 
         // Same as ImageFrame — just takes tex as parameter now
         private Rectangle ComputeCoverSrc(Rectangle targetRect, Image tex)
@@ -526,7 +541,8 @@ namespace ArtFrame.UserInterface
         private Rectangle _trackHitbox;
         private Rectangle _resetHitbox;
 
-        private readonly Texture2D _pixel = Texture2D.CreateSinglePixel(Color.White);
+        private static Texture2D? _sharedPixel;
+        private Texture2D _pixel => _sharedPixel ??= Texture2D.CreateSinglePixel(Color.White);
 
         // ── Layout ───────────────────────────────────────────────────────────
         // KEY FIX: The reset button column is *always* reserved regardless of

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OsuLib.Models;
+using ArtFrame.RythmModule;
 
 namespace OsuLib
 {
@@ -33,6 +34,9 @@ namespace OsuLib
 
         /// <summary>All parsed hit objects (Notes and Sliders), sorted by time.</summary>
         public List<OsuHitObject> HitObjects { get; } = new();
+
+        /// <summary>Decoupled, high-precision timing control point info aligned with osu!lazer.</summary>
+        public ControlPointInfo ControlPoints { get; } = new();
 
         /// <summary>Format version read from the first line of the file (e.g. 14).</summary>
         public int FormatVersion { get; set; }
@@ -161,13 +165,12 @@ namespace OsuLib
                 if (obj.ObjectType == HitObjectType.Hold) continue;
 
                 // Active uninherited point → gives us beatLength (ms per beat)
-                var redLine = GetTimingPointAt(obj.Time, uninheritedOnly: true);
-                if (redLine == null) continue;
+                var redLine = ControlPoints.TimingPointAt(obj.Time);
                 double beatLengthMs = redLine.BeatLength;
 
-                // Active any-type point → gives us velocity multiplier
-                var activePt = GetTimingPointAt(obj.Time, uninheritedOnly: false);
-                double velMult = activePt?.VelocityMultiplier ?? 1.0;
+                // Active difficulty point → gives us velocity multiplier
+                var diffPoint = ControlPoints.DifficultyPointAt(obj.Time);
+                double velMult = diffPoint.SpeedMultiplier;
 
                 // osu! pixels per beat at this slider
                 double pixelsPerBeat = 100.0 * sliderMultiplier * velMult;
@@ -198,11 +201,9 @@ namespace OsuLib
                 sliderMultiplier = sm;
             }
 
-            var redLine  = GetTimingPointAt(timeMs, uninheritedOnly: true);
-            if (redLine == null) return 0;
-
-            var activePt = GetTimingPointAt(timeMs, uninheritedOnly: false);
-            double velMult = activePt?.VelocityMultiplier ?? 1.0;
+            var redLine = ControlPoints.TimingPointAt(timeMs);
+            var diffPoint = ControlPoints.DifficultyPointAt(timeMs);
+            double velMult = diffPoint.SpeedMultiplier;
 
             // pixels per ms = (100 * SliderMultiplier * velocityMultiplier) / beatLength
             return (100.0 * sliderMultiplier * velMult) / redLine.BeatLength;
