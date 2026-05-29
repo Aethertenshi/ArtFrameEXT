@@ -106,7 +106,7 @@ namespace ArtFrameCore.SdlBindings
         private const string DllName = "SDL3.dll";
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr SDL_CreateRenderer(IntPtr window, [MarshalAs(UnmanagedType.LPUTF8Str)] string? name);
+        private static extern IntPtr SDL_CreateGPURenderer(IntPtr device, IntPtr window);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void SDL_DestroyRenderer(IntPtr renderer);
@@ -197,8 +197,8 @@ namespace ArtFrameCore.SdlBindings
                 return true;
             }
 
-            // In SDL3, we pass null to automatically select the best graphics driver
-            _rendererPtr = SDL_CreateRenderer(window, null);
+            // Create a GPU-backed renderer so custom fragment shaders are supported!
+            _rendererPtr = SDL_CreateGPURenderer(IntPtr.Zero, window);
             if (_rendererPtr == IntPtr.Zero)
             {
                 Console.WriteLine("Failed to create SDL renderer.");
