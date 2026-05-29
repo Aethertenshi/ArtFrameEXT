@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using ArtFrameCore.SdlBindings;
 using ArtFrameCore.DataType;
 
-namespace ArtFrameCore.Modules
+namespace ArtFrameCore.UserInterface
 {
     /// <summary>
     /// Base class representing a node in the UI hierarchy tree.

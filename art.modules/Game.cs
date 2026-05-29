@@ -1,5 +1,6 @@
 using System;
 using ArtFrameCore.SdlBindings;
+using ArtFrameCore.UserInterface;
 
 namespace ArtFrameCore.Modules
 {

@@ -41,6 +41,23 @@ namespace ArtFrameCore.SdlBindings
         public SDL_FPoint tex_coord;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SDL_FRect
+    {
+        public float x;
+        public float y;
+        public float w;
+        public float h;
+
+        public SDL_FRect(float x, float y, float w, float h)
+        {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+        }
+    }
+
     /// <summary>
     /// Static class handling the 2D hardware-accelerated rendering and geometry batching.
     /// </summary>
@@ -75,7 +92,18 @@ namespace ArtFrameCore.SdlBindings
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr SDL_GetRendererName(IntPtr renderer);
 
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool SDL_RenderTexture(IntPtr renderer, IntPtr texture, IntPtr srcrect, ref SDL_FRect dstrect);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void SDL_DestroyTexture(IntPtr texture);
+
         private static IntPtr _rendererPtr = IntPtr.Zero;
+
+        /// <summary>
+        /// Gets the raw SDL3 renderer pointer.
+        /// </summary>
+        public static IntPtr Pointer => _rendererPtr;
 
         /// <summary>
         /// Gets the name of the active rendering backend (e.g. "direct3d11", "opengl", etc.).
@@ -207,6 +235,31 @@ namespace ArtFrameCore.SdlBindings
 
             Flush();
             SDL_RenderPresent(_rendererPtr);
+        }
+
+        /// <summary>
+        /// Draws a texture at the specified position and dimensions.
+        /// </summary>
+        public static void DrawTexture(IntPtr texture, float x, float y, float w, float h)
+        {
+            if (_rendererPtr == IntPtr.Zero || texture == IntPtr.Zero) return;
+
+            // We must flush any batched geometry first, to maintain correct draw order!
+            Flush();
+
+            var dst = new SDL_FRect(x, y, w, h);
+            SDL_RenderTexture(_rendererPtr, texture, IntPtr.Zero, ref dst);
+        }
+
+        /// <summary>
+        /// Destroys a texture resource.
+        /// </summary>
+        public static void DestroyTexture(IntPtr texture)
+        {
+            if (texture != IntPtr.Zero)
+            {
+                SDL_DestroyTexture(texture);
+            }
         }
 
         /// <summary>
