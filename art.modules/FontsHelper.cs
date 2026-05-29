@@ -110,7 +110,7 @@ namespace ArtFrameCore.Modules
     /// <summary>
     /// Manages high-performance loading, measuring, and drawing of Multi-channel Signed Distance Field (MTSDF) fonts.
     /// </summary>
-    public static class FontsHelper
+    public static class Fonts
     {
         private static readonly Dictionary<string, MtsdfFont> _fonts = new Dictionary<string, MtsdfFont>(StringComparer.OrdinalIgnoreCase);
 

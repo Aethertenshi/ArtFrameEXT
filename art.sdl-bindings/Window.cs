@@ -3,6 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace ArtFrameCore.SdlBindings
 {
+    public enum WindowMode
+    {
+        Resizable,
+        Fixed,
+        Fullscreen,
+    }
+
     /// <summary>
     /// Static class for managing SDL3 window creation and event processing.
     /// </summary>
@@ -50,7 +57,7 @@ namespace ArtFrameCore.SdlBindings
         /// <param name="height">The height of the window.</param>
         /// <param name="resizable">Whether the window is resizable.</param>
         /// <returns>True if the window was successfully created; otherwise, false.</returns>
-        public static bool Create(string title, int width, int height, bool resizable = true)
+        public static bool Create(string title, int width, int height, WindowMode resizable = WindowMode.Resizable)
         {
             if (_windowPtr != IntPtr.Zero)
             {
@@ -69,7 +76,21 @@ namespace ArtFrameCore.SdlBindings
                 _isInitialized = true;
             }
 
-            ulong flags = resizable ? SDL_WINDOW_RESIZABLE : 0;
+            ulong flags = 0;
+            switch (resizable)
+            {
+                case WindowMode.Resizable:
+                    flags |= SDL_WINDOW_RESIZABLE;
+                    break;
+                case WindowMode.Fullscreen:
+                    flags |= 0x0000000000001000ul; // SDL_WINDOW_FULLSCREEN
+                    break;
+                case WindowMode.Fixed:
+                    break;
+                default:
+                    break;
+            }
+
             _windowPtr = SDL_CreateWindow(title, width, height, flags);
 
             if (_windowPtr == IntPtr.Zero)

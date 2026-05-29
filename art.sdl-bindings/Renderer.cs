@@ -58,6 +58,46 @@ namespace ArtFrameCore.SdlBindings
         }
     }
 
+    public enum SDL_GPUShaderFormat : uint
+    {
+        INVALID = 0,
+        PRIVATE = (1 << 0),  // Metal MSL source
+        SPIRV = (1 << 1),    // Vulkan SPIR-V
+        DXBC = (1 << 2),     // D3D11 HLSL DXBC (SM 4.0/5.0)
+        DXIL = (1 << 3),     // D3D12 HLSL DXIL
+        MSL = (1 << 4)       // Metal MSL bytecode
+    }
+
+    public enum SDL_GPUShaderStage : uint
+    {
+        VERTEX = 0,
+        FRAGMENT = 1,
+        COMPUTE = 2
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SDL_GPUShaderCreateInfo
+    {
+        public uint code_size;
+        public IntPtr code;
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
+        public string entrypoint;
+        public SDL_GPUShaderFormat format;
+        public SDL_GPUShaderStage stage;
+        public uint num_samplers;
+        public uint num_storage_textures;
+        public uint num_storage_buffers;
+        public uint num_uniform_buffers;
+        public uint props;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SDL_GPURenderStateCreateInfo
+    {
+        public IntPtr fragment_shader; // Pointer to SDL_GPUShader
+        public int num_sampler_bindings;
+    }
+
     /// <summary>
     /// Static class handling the 2D hardware-accelerated rendering and geometry batching.
     /// </summary>
@@ -98,6 +138,24 @@ namespace ArtFrameCore.SdlBindings
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void SDL_DestroyTexture(IntPtr texture);
 
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr SDL_GetGPURendererDevice(IntPtr renderer);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr SDL_CreateGPUShader(IntPtr device, ref SDL_GPUShaderCreateInfo createinfo);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr SDL_CreateGPURenderState(IntPtr renderer, ref SDL_GPURenderStateCreateInfo createinfo);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_SetGPURenderState(IntPtr renderer, IntPtr state);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_DestroyGPURenderState(IntPtr renderer, IntPtr state);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_ReleaseGPUShader(IntPtr device, IntPtr shader);
+
         private static IntPtr _rendererPtr = IntPtr.Zero;
 
         /// <summary>
@@ -127,6 +185,7 @@ namespace ArtFrameCore.SdlBindings
         private static readonly int[] _indexBuffer = new int[MaxIndices];
         private static int _quadCount = 0;
         private static IntPtr _currentTexture = IntPtr.Zero;
+        private static IntPtr _currentShaderState = IntPtr.Zero;
 
         /// <summary>
         /// Initializes the renderer for a specific window.
@@ -172,6 +231,7 @@ namespace ArtFrameCore.SdlBindings
 
             _quadCount = 0;
             _currentTexture = IntPtr.Zero;
+            _currentShaderState = IntPtr.Zero;
 
             SDL_SetRenderDrawColor(_rendererPtr, clearR, clearG, clearB, clearA);
             SDL_RenderClear(_rendererPtr);
@@ -308,6 +368,19 @@ namespace ArtFrameCore.SdlBindings
             if (texture != IntPtr.Zero)
             {
                 SDL_DestroyTexture(texture);
+            }
+        }
+
+        /// <summary>
+        /// Applies a custom GPU render state (fragment shader) to subsequent batched draw calls.
+        /// </summary>
+        public static void SetShader(IntPtr renderState)
+        {
+            if (_currentShaderState != renderState)
+            {
+                Flush(); // Flush all previous drawings under the old shader first!
+                _currentShaderState = renderState;
+                SDL_SetGPURenderState(_rendererPtr, renderState);
             }
         }
 

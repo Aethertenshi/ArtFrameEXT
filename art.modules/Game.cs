@@ -13,6 +13,7 @@ namespace ArtFrameCore.Modules
         public string Title { get; set; } = "ArtFrame Game";
         public int WindowWidth { get; set; } = 800;
         public int WindowHeight { get; set; } = 600;
+        public WindowMode WindowMode { get; set; } = WindowMode.Resizable;
 
         public Game()
         {
@@ -24,7 +25,7 @@ namespace ArtFrameCore.Modules
         /// </summary>
         public void Run()
         {
-            if (!Window.Create(Title, WindowWidth, WindowHeight, resizable: true))
+            if (!Window.Create(Title, WindowWidth, WindowHeight, resizable: WindowMode))
             {
                 Console.WriteLine("Failed to initialize game window.");
                 return;
