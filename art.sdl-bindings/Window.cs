@@ -83,7 +83,7 @@ namespace ArtFrameCore.SdlBindings
                     flags = SDL_WINDOW_RESIZABLE;
                     break;
                 case WindowMode.Fullscreen:
-                    flags = 0x0000000000001000ul; // SDL_WINDOW_FULLSCREEN
+                    flags = 0x0000000000000001ul; // SDL_WINDOW_FULLSCREEN
                     break;
                 case WindowMode.Fixed:
                     break;
