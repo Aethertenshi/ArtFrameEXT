@@ -126,6 +126,7 @@ namespace ArtFrameCore.SdlBindings
         private static readonly SDL_Vertex[] _vertexBuffer = new SDL_Vertex[MaxVertices];
         private static readonly int[] _indexBuffer = new int[MaxIndices];
         private static int _quadCount = 0;
+        private static IntPtr _currentTexture = IntPtr.Zero;
 
         /// <summary>
         /// Initializes the renderer for a specific window.
@@ -170,6 +171,7 @@ namespace ArtFrameCore.SdlBindings
             if (_rendererPtr == IntPtr.Zero) return;
 
             _quadCount = 0;
+            _currentTexture = IntPtr.Zero;
 
             SDL_SetRenderDrawColor(_rendererPtr, clearR, clearG, clearB, clearA);
             SDL_RenderClear(_rendererPtr);
@@ -180,9 +182,10 @@ namespace ArtFrameCore.SdlBindings
         /// </summary>
         public static void DrawQuad(float x, float y, float w, float h, SDL_FColor color)
         {
-            if (_quadCount >= MaxQuads)
+            if (_currentTexture != IntPtr.Zero || _quadCount >= MaxQuads)
             {
                 Flush();
+                _currentTexture = IntPtr.Zero;
             }
 
             int vOffset = _quadCount * 4;
@@ -211,6 +214,52 @@ namespace ArtFrameCore.SdlBindings
         }
 
         /// <summary>
+        /// Queues a textured quad to be rendered in the batch, automatically flushing if the texture changes.
+        /// </summary>
+        /// <param name="texture">The native SDL_Texture pointer to render.</param>
+        /// <param name="x">The screen X coordinate.</param>
+        /// <param name="y">The screen Y coordinate.</param>
+        /// <param name="w">The width to render.</param>
+        /// <param name="h">The height to render.</param>
+        /// <param name="u1">The left UV coordinate.</param>
+        /// <param name="v1">The top UV coordinate.</param>
+        /// <param name="u2">The right UV coordinate.</param>
+        /// <param name="v2">The bottom UV coordinate.</param>
+        /// <param name="color">The color modulation to apply.</param>
+        public static void DrawTextureQuad(IntPtr texture, float x, float y, float w, float h, float u1, float v1, float u2, float v2, SDL_FColor color)
+        {
+            if (texture != _currentTexture || _quadCount >= MaxQuads)
+            {
+                Flush();
+                _currentTexture = texture;
+            }
+
+            int vOffset = _quadCount * 4;
+
+            // 1. Top-Left
+            _vertexBuffer[vOffset + 0].position = new SDL_FPoint(x, y);
+            _vertexBuffer[vOffset + 0].color = color;
+            _vertexBuffer[vOffset + 0].tex_coord = new SDL_FPoint(u1, v1);
+
+            // 2. Top-Right
+            _vertexBuffer[vOffset + 1].position = new SDL_FPoint(x + w, y);
+            _vertexBuffer[vOffset + 1].color = color;
+            _vertexBuffer[vOffset + 1].tex_coord = new SDL_FPoint(u2, v1);
+
+            // 3. Bottom-Right
+            _vertexBuffer[vOffset + 2].position = new SDL_FPoint(x + w, y + h);
+            _vertexBuffer[vOffset + 2].color = color;
+            _vertexBuffer[vOffset + 2].tex_coord = new SDL_FPoint(u2, v2);
+
+            // 4. Bottom-Left
+            _vertexBuffer[vOffset + 3].position = new SDL_FPoint(x, y + h);
+            _vertexBuffer[vOffset + 3].color = color;
+            _vertexBuffer[vOffset + 3].tex_coord = new SDL_FPoint(u1, v2);
+
+            _quadCount++;
+        }
+
+        /// <summary>
         /// Flushes the active geometry to the GPU in a single draw call.
         /// </summary>
         public static void Flush()
@@ -220,8 +269,8 @@ namespace ArtFrameCore.SdlBindings
             int vertexCount = _quadCount * 4;
             int indexCount = _quadCount * 6;
 
-            // Render all accumulated vertices as a single batch!
-            SDL_RenderGeometry(_rendererPtr, IntPtr.Zero, _vertexBuffer, vertexCount, _indexBuffer, indexCount);
+            // Render all accumulated vertices as a single batch, using the active texture!
+            SDL_RenderGeometry(_rendererPtr, _currentTexture, _vertexBuffer, vertexCount, _indexBuffer, indexCount);
 
             _quadCount = 0;
         }
