@@ -329,8 +329,12 @@ namespace ArtFrameCore.SdlBindings
             int vertexCount = _quadCount * 4;
             int indexCount = _quadCount * 6;
 
-            // Render all accumulated vertices as a single batch, using the active texture!
+            Console.WriteLine($"[ArtFrameCore] Flushing {_quadCount} quads to GPU (Texture: {_currentTexture})...");
+            
+            // Render all accumulated geometry as a single hardware-accelerated batch
             SDL_RenderGeometry(_rendererPtr, _currentTexture, _vertexBuffer, vertexCount, _indexBuffer, indexCount);
+
+            Console.WriteLine("[ArtFrameCore] Flush successful.");
 
             _quadCount = 0;
         }

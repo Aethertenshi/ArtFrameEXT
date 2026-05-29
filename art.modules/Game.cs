@@ -33,8 +33,10 @@ namespace ArtFrameCore.Modules
 
             // Trigger the developer's loading/initialization code
             Load();
+            Console.WriteLine("[ArtFrameCore] Load() completed successfully.");
 
             // Run the game loop
+            Console.WriteLine("[ArtFrameCore] Entering main loop...");
             while (Window.KeepRunning())
             {
                 // Trigger recursive hierarchy updates for all elements and custom actions first!
