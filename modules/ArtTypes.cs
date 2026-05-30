@@ -1,6 +1,7 @@
 using ManagedBass.Fx;
 using Microsoft.Xna.Framework;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
 
 namespace ArtFrame.ArtTypes
@@ -81,6 +82,10 @@ namespace ArtFrame.ArtTypes
             OffsetX = offsetX; OffsetY = offsetY;
         }
 
+        public override string ToString()
+        {
+            return $"UDim2(ScaleX: {ScaleX}, ScaleY: {ScaleY}, OffsetX: {OffsetX}, OffsetY: {OffsetY})";
+        }
         public Vector2 Resolve(Vector2 parentSize) => new Vector2(
             parentSize.X * ScaleX + OffsetX,
             parentSize.Y * ScaleY + OffsetY
@@ -129,6 +134,11 @@ namespace ArtFrame.ArtTypes
         {
             float length = Length();
             return length > 0 ? this / length : new Vector2(0, 0);
+        }
+
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
         }
         public static float Distance(Vector2 value1, Vector2 value2)
         {

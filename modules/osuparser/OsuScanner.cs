@@ -23,7 +23,37 @@ namespace OsuLib
             if (!Directory.Exists(rootDirectory))
                 throw new DirectoryNotFoundException($"Directory not found: {rootDirectory}");
 
-            return Directory.GetFiles(rootDirectory, "*.osu", SearchOption.AllDirectories);
+            var osuFiles = new List<string>();
+            ScanDirectoryRecursive(rootDirectory, osuFiles);
+            return osuFiles;
+        }
+
+        private void ScanDirectoryRecursive(string path, List<string> results)
+        {
+            try
+            {
+                // Get .osu files in the current directory
+                var files = Directory.GetFiles(path, "*.osu");
+                results.AddRange(files);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[OsuScanner] Error getting files in {path}: {ex.Message}");
+            }
+
+            try
+            {
+                // Get subdirectories and recurse
+                var subDirs = Directory.GetDirectories(path);
+                foreach (var dir in subDirs)
+                {
+                    ScanDirectoryRecursive(dir, results);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[OsuScanner] Error enumerating subdirectories in {path}: {ex.Message}");
+            }
         }
 
         // ── Batch parsing ────────────────────────────────────────────────────────

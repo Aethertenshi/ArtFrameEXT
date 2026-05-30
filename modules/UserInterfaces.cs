@@ -293,7 +293,7 @@ namespace ArtFrame.UserInterface
         public override void Update(float dt)
         {
             bool wasHovered = IsHovered;
-            IsHovered = _hitbox.Contains(Mouse.Position.X, Mouse.Position.Y);
+            IsHovered = _hitbox.Contains(Math.Clamp(Mouse.Position.X, 0, GraphicsHelper.ScreenWidth), Math.Clamp(Mouse.Position.Y, 0, GraphicsHelper.ScreenHeight));
             IsPressed = IsHovered && Mouse.LeftDown();
 
             if (IsHovered && !wasHovered) onHoverEnter?.Invoke(this);
@@ -713,7 +713,7 @@ namespace ArtFrame.UserInterface
 
                 Art.Instance.spriteBatch.Draw(_pixel, _resetHitbox, (resetBtnColor * 0.4f) * (alpha * buttonAlpha));
 
-                string resetGlyph = "#";
+                string resetGlyph = "@";
                 var (rVisualOffset, rMeasured) = FontHelper.MeasureTextBounds(fontName, resetGlyph, fontScale * 10);
 
                 Vector2 resetCenter = new Vector2(
@@ -847,6 +847,7 @@ namespace ArtFrame.UserInterface
             // — Draw children (clipped or not) —
             if (clipMode == ClipMode.Clip)
             {
+                //Console.WriteLine($"resolvedSize: {resolvedSize.ToString()}, childOrigin: {childOrigin.ToString()}, topLeft: {topLeft.ToString()}");
                 DrawClipped(dt, resolvedSize, childOrigin, topLeft);
             }
             else
@@ -871,9 +872,21 @@ namespace ArtFrame.UserInterface
                 (int)resolvedSize.Y
             );
 
+            // Intersect with viewport bounds to guarantee we never set an out-of-bounds scissor rect
+            Rectangle viewportBounds = gd.Viewport.Bounds;
+            scissor = Rectangle.Intersect(scissor, viewportBounds);
+
+            // If the scissor rect is entirely off-screen, there's nothing to render, so we can cull drawing
+            if (scissor.Width <= 0 || scissor.Height <= 0)
+                return;
+
             // Clamp scissor to current scissor so nested ScrollingFrames stack correctly
             if (gd.RasterizerState.ScissorTestEnable)
+            {
                 scissor = Rectangle.Intersect(scissor, gd.ScissorRectangle);
+                if (scissor.Width <= 0 || scissor.Height <= 0)
+                    return;
+            }
 
             gd.ScissorRectangle = scissor;
 

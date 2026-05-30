@@ -1,4 +1,4 @@
-﻿using ArtFrame.ArtTypes;
+using ArtFrame.ArtTypes;
 using ArtFrame.Easings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -174,6 +174,21 @@ namespace ArtFrame
         {
             _targetDrawTime = 1.0f / fps;
         }
+        public static void SetVSyncMode()
+        {
+            instance.IsFixedTimeStep = false;
+            graphics.SynchronizeWithVerticalRetrace = true;
+            _targetDrawTime = 0f;
+            graphics.ApplyChanges();
+        }
+        public static void SetPerformanceMode(int pollingRate, int fps)
+        {
+            instance.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / pollingRate);
+            instance.IsFixedTimeStep = true;
+            graphics.SynchronizeWithVerticalRetrace = false;
+            _targetDrawTime = 1.0f / fps;
+            graphics.ApplyChanges();
+        }
 
         // Draw Helpers
         public static ArtTypes.Vector2 GetAnchorOffset(AnchorX anchorX, AnchorY anchorY, ArtTypes.Vector2 size)
@@ -206,8 +221,8 @@ namespace ArtFrame
         }
 
         // Primitive Functions
-        public static void DrawRectangle(float x, float y, float width, float height, ArtTypes.Color color) => instance.spriteBatch.Draw(instance.pixel, new ArtTypes.Rectangle(x, y, width, height), color);
-        public static void DrawRectanglePro(ArtTypes.Vector2 position, ArtTypes.Vector2 size, ArtTypes.Vector2 origin, float rotation, ArtTypes.Color color)
+        internal static void DrawRectangle(float x, float y, float width, float height, ArtTypes.Color color) => instance.spriteBatch.Draw(instance.pixel, new ArtTypes.Rectangle(x, y, width, height), color);
+        internal static void DrawRectanglePro(ArtTypes.Vector2 position, ArtTypes.Vector2 size, ArtTypes.Vector2 origin, float rotation, ArtTypes.Color color)
         {
             // Because we are stretching a 1x1 pixel to 'size', 
             // the origin needs to be normalized (0.0 to 1.0) relative to the 1x1 texture.

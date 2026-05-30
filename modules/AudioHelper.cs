@@ -184,6 +184,51 @@ namespace ArtFrame
             return 0f;
         }
 
+        private static Dictionary<string, int> _musicFXHandles = new();
+
+        public static void SetMusicLowPass(string musicName, bool enabled, float cutoffHz = 800f)
+        {
+            if (_musics.TryGetValue(musicName, out int handle))
+            {
+                if (enabled)
+                {
+                    if (_musicFXHandles.TryGetValue(musicName, out int fxHandle))
+                    {
+                        var parameters = new BQFParameters
+                        {
+                            lFilter = BQFType.LowPass,
+                            fCenter = cutoffHz,
+                            fQ = 0.707f
+                        };
+                        Bass.FXSetParameters(fxHandle, parameters);
+                    }
+                    else
+                    {
+                        int newFxHandle = Bass.ChannelSetFX(handle, EffectType.BQF, 0);
+                        if (newFxHandle != 0)
+                        {
+                            var parameters = new BQFParameters
+                            {
+                                lFilter = BQFType.LowPass,
+                                fCenter = cutoffHz,
+                                fQ = 0.707f
+                            };
+                            Bass.FXSetParameters(newFxHandle, parameters);
+                            _musicFXHandles[musicName] = newFxHandle;
+                        }
+                    }
+                }
+                else
+                {
+                    if (_musicFXHandles.TryGetValue(musicName, out int fxHandle))
+                    {
+                        Bass.ChannelRemoveFX(handle, fxHandle);
+                        _musicFXHandles.Remove(musicName);
+                    }
+                }
+            }
+        }
+
         public static void SeekMusic(string musicName, float position)
         {
             if (_musics.TryGetValue(musicName, out int handle))
@@ -202,6 +247,7 @@ namespace ArtFrame
                     Bass.StreamFree(handle);
             }
             _musics.Clear();
+            _musicFXHandles.Clear();
 
             // Finally, free the device
             Bass.Free();

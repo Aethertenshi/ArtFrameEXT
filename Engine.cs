@@ -63,6 +63,11 @@ namespace ArtFrame
                 game.Run();
             }
         }
+
+        public static void Exit()
+        {
+            Art.Instance?.Exit();
+        }
     }
 
     internal class Art : Game
@@ -72,10 +77,20 @@ namespace ArtFrame
         internal GraphicsDeviceManager graphics { get; private set; }
         internal SpriteBatch spriteBatch { get; private set; }
         internal GraphicsDevice graphicsDevice { get; private set; }
-        internal Texture2D pixel { get; private set; }
-
+        internal Texture2D? pixel { get; private set; } = null;
         // Private References
         private IArt art;
+
+        // Timing Counters (FPS / UPS / Polling Rate)
+        private int _updateCount = 0;
+        private int _drawCount = 0;
+        private float _counterElapsed = 0f;
+        private float _currentFps = 0f;
+        private float _currentUps = 0f;
+
+        // Draw Suppression Timing
+        private System.Reflection.FieldInfo? _accumulatorField;
+        private double _drawAccumulator = 0.0;
 
         // Text Input
         private int _textInputRefCount = 0;
@@ -108,11 +123,15 @@ namespace ArtFrame
             };
             Content.RootDirectory = ".";
             IsMouseVisible = true;
+
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
         }
 
         // Protected Methods
         protected override void Initialize()
         {
+            _accumulatorField = typeof(Game).GetField("accumulator", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
             graphicsDevice = GraphicsDevice; // ← moved here, now valid
             spriteBatch = new SpriteBatch(GraphicsDevice);
             pixel = ArtTypes.Texture2D.CreateSinglePixel(Color.White);
@@ -129,15 +148,54 @@ namespace ArtFrame
         // Standart FNA Game Loop
         protected override void Update(GameTime gameTime)
         {
-            float dt = (float)TargetElapsedTime.TotalSeconds;
+            _updateCount++;
+            _counterElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (_counterElapsed >= 0.25f)
+            {
+                _currentUps = _updateCount / _counterElapsed;
+                _currentFps = _drawCount / _counterElapsed;
+                _updateCount = 0;
+                _drawCount = 0;
+                _counterElapsed = 0f;
+            }
 
-            // Draw Suppression
-            InputManager.Update();
-            GraphicsHelper._currentDrawTime += dt;
-            if (GraphicsHelper._currentDrawTime < GraphicsHelper._targetDrawTime)
-                SuppressDraw();
+            // Draw Suppression (using reflection to safely detect the final update step of the frame)
+            bool isLastUpdate = true;
+            if (IsFixedTimeStep && _accumulatorField != null)
+            {
+                TimeSpan accumulatorValue = (TimeSpan)_accumulatorField.GetValue(this)!;
+                isLastUpdate = accumulatorValue < TargetElapsedTime;
+            }
+
+            if (isLastUpdate)
+            {
+                if (GraphicsHelper._targetDrawTime > 0f)
+                {
+                    _drawAccumulator += gameTime.ElapsedGameTime.TotalSeconds;
+                    if (_drawAccumulator > 0.5)
+                    {
+                        _drawAccumulator = 0.0;
+                    }
+
+                    if (_drawAccumulator < GraphicsHelper._targetDrawTime)
+                    {
+                        SuppressDraw();
+                    }
+                    else
+                    {
+                        _drawAccumulator -= GraphicsHelper._targetDrawTime;
+                    }
+                }
+            }
             else
-                GraphicsHelper._currentDrawTime -= GraphicsHelper._targetDrawTime;
+            {
+                // Suppress intermediate updates to prevent double-suppression bugs
+                SuppressDraw();
+            }
+
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            InputManager.Update();
 
             // Object Pool Update
             if (SpriteHelper.objectPool.Count > 0)
@@ -161,20 +219,18 @@ namespace ArtFrame
                     tween.Update(dt);
             }
 
-            if (Keyboard.IsKeyPressed(Keys.Escape)) Exit();
-
             // Update Logic
-            art.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            art.Update(dt);
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            float dt = (float)TargetElapsedTime.TotalSeconds;
+            _drawCount++;
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             GraphicsHelper.StartBatch(null);
                 GraphicsDevice.Clear(Color.Black);
-                art.ManualDraw((float)gameTime.ElapsedGameTime.TotalSeconds);
 
                 if (SpriteHelper.objectPool.Count > 0)
                 {
@@ -182,12 +238,27 @@ namespace ArtFrame
                         obj.Draw(dt, new ArtTypes.Vector2(GraphicsHelper.ScreenWidth, GraphicsHelper.ScreenHeight), Vector2.Zero);
                 }
 
+                art.ManualDraw(dt);
+                
                 // Helper Pool Update
                 if (RythmHelper.helperPool.Count > 0)
                 {
                     foreach (var helper in RythmHelper.helperPool)
                         helper.Draw(dt);
                 }
+
+                // Draw FPS / Polling Rate Counter in the bottom-left
+                string counterText = $"FPS: {_currentFps:0} | Polling Rate: {_currentUps:0}";
+                FontHelper.DrawTextPro(
+                    "gsans",
+                    counterText,
+                    new ArtTypes.Vector2(20f, GraphicsHelper.ScreenHeight - 35f),
+                    new ArtTypes.Vector2(0f, 0f),
+                    0f,
+                    15f, // scale
+                    new ArtTypes.Color(255, 255, 255, 255) // Slightly transparent white
+                );
+
             GraphicsHelper.CloseBatch();
 
             base.Draw(gameTime);
