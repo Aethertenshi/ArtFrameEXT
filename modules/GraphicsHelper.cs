@@ -2,6 +2,7 @@ using ArtFrame.ArtTypes;
 using ArtFrame.Easings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace ArtFrame
 {
@@ -98,6 +99,52 @@ namespace ArtFrame
         }
 
         // Image Methods
+        public static Image LoadImageResized(string imageName, string imagePath, int targetWidth, int targetHeight)
+        {
+            if (instance == null || instance.GraphicsDevice == null)
+                throw new InvalidOperationException("Art manager must be initialized before loading images.");
+
+            if (imagePool.ContainsKey(imageName))
+                return imagePool[imageName];
+
+            // 1. Load the massive original image temporarily
+            using FileStream stream = File.OpenRead(imagePath);
+            var fullTexture = Microsoft.Xna.Framework.Graphics.Texture2D.FromStream(graphicsDevice, stream);
+
+            // 2. Create the tiny destination container on the GPU
+            var renderTarget = new RenderTarget2D(
+                graphicsDevice,
+                targetWidth,
+                targetHeight
+            );
+
+            // 3. Tell the GPU to redirect drawing operations to our small target
+            graphicsDevice.SetRenderTarget(renderTarget);
+            graphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
+
+            // 4. Render the big texture scaled down into the small target bounds
+            var spriteBatch = new SpriteBatch(graphicsDevice);
+            spriteBatch.Begin();
+            spriteBatch.Draw(
+                fullTexture,
+                new Microsoft.Xna.Framework.Rectangle(0, 0, targetWidth, targetHeight),
+                Microsoft.Xna.Framework.Color.White
+            );
+            spriteBatch.End();
+
+            // 5. Restore the default screen render target
+            graphicsDevice.SetRenderTarget(null);
+
+            // 6. CRITICAL: Instantly incinerate the massive 8.3MB texture from unmanaged memory
+            fullTexture.Dispose();
+            spriteBatch.Dispose();
+
+            // 7. Wrap the 10KB renderTarget into your custom Image class and store it
+            var wrappedImage = new Image(renderTarget); // Assuming your wrapper accepts Texture2D
+            imagePool.Add(imageName, wrappedImage);
+
+            return wrappedImage;
+        }
         public static Image LoadImage(string imageName)
         {
             if (instance == null || instance.GraphicsDevice == null)
@@ -121,6 +168,21 @@ namespace ArtFrame
 
             return imagePool[imageName];
         }
+        public static bool UnloadImage(string imageName)
+        {
+            if (imagePool.TryGetValue(imageName, out Image image))
+            {
+                // 1. Dispose the underlying XNA/FNA GPU texture resource immediately
+                image.xnaTexture?.Dispose();
+
+                // 2. Remove the reference from the tracking pool so the GC can claim the wrapper
+                imagePool.Remove(imageName);
+
+                return true;
+            }
+
+            return false;
+        }
         public static void UnloadImages()
         {
             foreach (Image image in imagePool.Values) image.xnaTexture.Dispose();
@@ -136,6 +198,8 @@ namespace ArtFrame
         private static GraphicsDevice graphicsDevice => instance.graphicsDevice;
 
         public static RasterizerState? CurrentRasterizerState = null;
+
+        private static VertexPositionColor[] _internalVertexBuffer = new VertexPositionColor[2048];
 
         // Frame Rate Control
         internal static float _targetDrawTime = 1.0f / 60.0f;
@@ -153,6 +217,7 @@ namespace ArtFrame
         // Public Variables
         public static float ScreenHeight => graphicsDevice.Viewport.Height;
         public static float ScreenWidth => graphicsDevice.Viewport.Width;
+        public static bool ShowPerformanceTelemetry { get; set; } = false;
 
         // Window Configuration
         public static void ConfigureWindow(int width, int height, string title = "ArtFramework", bool fullscreen = false)
@@ -163,31 +228,40 @@ namespace ArtFrame
             graphics.ApplyChanges();
             window.Title = title;
         }
-        public static void SetInputFramerate(int framerate)
-        {
-            instance.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / framerate);
-            instance.IsFixedTimeStep = true;
-            graphics.SynchronizeWithVerticalRetrace = false;
-            graphics.ApplyChanges();
-        }
-        public static void SetFrameRate(int fps)
-        {
-            _targetDrawTime = 1.0f / fps;
-        }
+        //public static void SetInputFramerate(int framerate)
+        //{
+        //    instance.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / framerate);
+        //    instance.IsFixedTimeStep = true;
+        //    graphics.SynchronizeWithVerticalRetrace = false;
+        //    graphics.ApplyChanges();
+        //}
+        //public static void SetFrameRate(int fps)
+        //{
+        //    _targetDrawTime = 1.0f / fps;
+        //}
         public static void SetVSyncMode()
         {
             instance.IsFixedTimeStep = false;
             graphics.SynchronizeWithVerticalRetrace = true;
-            _targetDrawTime = 0f;
             graphics.ApplyChanges();
         }
-        public static void SetPerformanceMode(int pollingRate, int fps)
+        public static void SetPerformanceMode(int pollingRate, string? id = null)
         {
-            instance.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / pollingRate);
-            instance.IsFixedTimeStep = true;
-            graphics.SynchronizeWithVerticalRetrace = false;
-            _targetDrawTime = 1.0f / fps;
+            // 1. Tell FNA to run a variable, uncapped frame loop
+            graphics.SynchronizeWithVerticalRetrace = false; // Turn off VSync
+            instance.IsFixedTimeStep = false;
             graphics.ApplyChanges();
+
+            // 2. Let your high-precision thread limiter throttle the main rendering loop
+            Engine.HighPrecisionLimiter.SetMaxFps(pollingRate);
+
+            if (id != null) Console.WriteLine($"[PerformanceMode] Set from '{id}' with Polling Rate: {pollingRate} Hz");
+
+            //instance.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / pollingRate);
+            //instance.IsFixedTimeStep = false;
+            //graphics.SynchronizeWithVerticalRetrace = false;
+            //_targetDrawTime = 1.0f / fps;
+            //graphics.ApplyChanges();
         }
 
         // Draw Helpers
@@ -221,8 +295,8 @@ namespace ArtFrame
         }
 
         // Primitive Functions
-        internal static void DrawRectangle(float x, float y, float width, float height, ArtTypes.Color color) => instance.spriteBatch.Draw(instance.pixel, new ArtTypes.Rectangle(x, y, width, height), color);
-        internal static void DrawRectanglePro(ArtTypes.Vector2 position, ArtTypes.Vector2 size, ArtTypes.Vector2 origin, float rotation, ArtTypes.Color color)
+        public static void DrawRectangle(float x, float y, float width, float height, ArtTypes.Color color) => instance.spriteBatch.Draw(instance.pixel, new ArtTypes.Rectangle(x, y, width, height), color);
+        public static void DrawRectanglePro(ArtTypes.Vector2 position, ArtTypes.Vector2 size, ArtTypes.Vector2 origin, float rotation, ArtTypes.Color color)
         {
             // Because we are stretching a 1x1 pixel to 'size', 
             // the origin needs to be normalized (0.0 to 1.0) relative to the 1x1 texture.
@@ -294,6 +368,42 @@ namespace ArtFrame
 
             // 3. Restore the state
             instance.graphicsDevice.RasterizerState = oldRasterizerState;
+
+            StartBatch();
+        }
+
+        public static void DrawTriangleStrip(ArtVertex[] vertices, int vertexCount)
+        {
+            if (vertexCount < 3) return;
+
+            if (vertexCount > _internalVertexBuffer.Length)
+            {
+                System.Array.Resize(ref _internalVertexBuffer, vertexCount);
+            }
+
+            for (int i = 0; i < vertexCount; i++)
+            {
+                _internalVertexBuffer[i] = new VertexPositionColor(
+                    vertices[i].Position,
+                    vertices[i].Color
+                );
+            }
+
+            CloseBatch();
+
+            _basicEffect.Projection = Matrix.CreateOrthographicOffCenter(0, ScreenWidth, ScreenHeight, 0, 0, 1);
+            _basicEffect.VertexColorEnabled = true;
+
+            RasterizerState oldRasterizerState = graphicsDevice.RasterizerState;
+            graphicsDevice.RasterizerState = RasterizerState.CullNone;
+
+            foreach (var pass in _basicEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleStrip, _internalVertexBuffer, 0, vertexCount - 2);
+            }
+
+            graphicsDevice.RasterizerState = oldRasterizerState;
 
             StartBatch();
         }

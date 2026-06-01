@@ -71,7 +71,8 @@ namespace OsuLib
         /// <returns>List of successfully parsed beatmaps.</returns>
         public IReadOnlyList<OsuBeatmap> ScanAll(
             string rootDirectory,
-            Action<string, Exception>? onError = null)
+            Action<string, Exception>? onError = null,
+            bool metadataOnly = false)
         {
             var paths = FindOsuFiles(rootDirectory);
             var results = new List<OsuBeatmap>(paths.Count);
@@ -80,7 +81,7 @@ namespace OsuLib
             {
                 try
                 {
-                    results.Add(_parser.Parse(path));
+                    results.Add(_parser.Parse(path, metadataOnly));
                 }
                 catch (Exception ex)
                 {
@@ -99,7 +100,8 @@ namespace OsuLib
         /// </summary>
         public IEnumerable<OsuBeatmap> ScanLazy(
             string rootDirectory,
-            Action<string, Exception>? onError = null)
+            Action<string, Exception>? onError = null,
+            bool metadataOnly = false)
         {
             var paths = FindOsuFiles(rootDirectory);
 
@@ -108,7 +110,7 @@ namespace OsuLib
                 OsuBeatmap? bm = null;
                 try
                 {
-                    bm = _parser.Parse(path);
+                    bm = _parser.Parse(path, metadataOnly);
                 }
                 catch (Exception ex)
                 {
@@ -131,9 +133,10 @@ namespace OsuLib
         public IReadOnlyList<OsuBeatmap> ScanFiltered(
             string rootDirectory,
             Func<OsuBeatmap, bool> filter,
-            Action<string, Exception>? onError = null)
+            Action<string, Exception>? onError = null,
+            bool metadataOnly = false)
         {
-            return ScanLazy(rootDirectory, onError)
+            return ScanLazy(rootDirectory, onError, metadataOnly)
                 .Where(filter)
                 .ToList();
         }
@@ -144,7 +147,7 @@ namespace OsuLib
         /// Returns all .osu files directly inside a single beatmap folder
         /// (i.e. a single beatmapset, multiple difficulties).
         /// </summary>
-        public IReadOnlyList<OsuBeatmap> ParseSet(string beatmapSetDirectory)
+        public IReadOnlyList<OsuBeatmap> ParseSet(string beatmapSetDirectory, bool metadataOnly = false)
         {
             if (!Directory.Exists(beatmapSetDirectory))
                 throw new DirectoryNotFoundException(beatmapSetDirectory);
@@ -152,7 +155,7 @@ namespace OsuLib
             var results = new List<OsuBeatmap>();
             foreach (var f in Directory.GetFiles(beatmapSetDirectory, "*.osu"))
             {
-                try { results.Add(_parser.Parse(f)); }
+                try { results.Add(_parser.Parse(f, metadataOnly)); }
                 catch { /* skip corrupt files */ }
             }
             return results;

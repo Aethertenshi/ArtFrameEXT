@@ -55,7 +55,7 @@ namespace ArtFrame
         private static Dictionary<string, MtsdfFont> _fonts = new();
 
         // Rendering Methods
-        internal static void DrawTextPro(
+        public static void DrawTextPro(
            string fontName,
            string text,
            Vector2 position,

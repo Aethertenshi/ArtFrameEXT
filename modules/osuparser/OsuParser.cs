@@ -28,27 +28,27 @@ namespace OsuLib
         /// </summary>
         /// <exception cref="FileNotFoundException">If the file does not exist.</exception>
         /// <exception cref="InvalidDataException">If the file is not a valid .osu file.</exception>
-        public OsuBeatmap Parse(string path)
+        public OsuBeatmap Parse(string path, bool metadataOnly = false)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException("File not found", path);
 
             var lines = File.ReadAllLines(path);
-            return ParseLines(lines, path);
+            return ParseLines(lines, path, metadataOnly);
         }
 
         /// <summary>
         /// Parses .osu content from a string instead of a file path.
         /// </summary>
-        public OsuBeatmap ParseText(string content, string sourcePath = "")
+        public OsuBeatmap ParseText(string content, string sourcePath = "", bool metadataOnly = false)
         {
             var lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-            return ParseLines(lines, sourcePath);
+            return ParseLines(lines, sourcePath, metadataOnly);
         }
 
         // ── Internal parsing ─────────────────────────────────────────────────────
 
-        private OsuBeatmap ParseLines(string[] lines, string filePath)
+        private OsuBeatmap ParseLines(string[] lines, string filePath, bool metadataOnly = false)
         {
             var beatmap = new OsuBeatmap { FilePath = filePath };
 
@@ -73,6 +73,12 @@ namespace OsuLib
                 if (line.StartsWith("[") && line.EndsWith("]"))
                 {
                     currentSection = line[1..^1]; // trim [ ]
+
+                    // Stop parsing immediately if we hit Colours or HitObjects in metadata-only mode
+                    if (metadataOnly && (currentSection == "Colours" || currentSection == "HitObjects"))
+                    {
+                        break;
+                    }
                     continue;
                 }
 
@@ -150,7 +156,6 @@ namespace OsuLib
 
             // Sort by time (the file should already be sorted, but just in case)
             beatmap.TimingPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
-            beatmap.HitObjects.Sort((a, b) => a.Time.CompareTo(b.Time));
 
             // Decoupled lists sorting
             beatmap.ControlPoints.TimingPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
@@ -158,8 +163,12 @@ namespace OsuLib
             beatmap.ControlPoints.SoundPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
             beatmap.ControlPoints.EffectPoints.Sort((a, b) => a.Time.CompareTo(b.Time));
 
-            // Fill slider velocity / duration
-            beatmap.ResolveSliderVelocities();
+            if (!metadataOnly)
+            {
+                beatmap.HitObjects.Sort((a, b) => a.Time.CompareTo(b.Time));
+                // Fill slider velocity / duration
+                beatmap.ResolveSliderVelocities();
+            }
 
             return beatmap;
         }

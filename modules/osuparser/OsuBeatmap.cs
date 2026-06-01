@@ -90,28 +90,30 @@ namespace OsuLib
 
         // ── Timing helpers ───────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Finds the timing point that is active at the given time.
-        /// Returns the last timing point whose <c>Time ≤ t</c>,
-        /// or the very first timing point if <paramref name="t"/> is before everything.
-        /// </summary>
-        /// <param name="t">Timestamp in milliseconds.</param>
-        /// <param name="uninheritedOnly">
-        ///   If true, only considers red-line (BPM) timing points.
-        /// </param>
         public OsuTimingPoint? GetTimingPointAt(double t, bool uninheritedOnly = false)
         {
-            var pts = uninheritedOnly
-                ? TimingPoints.Where(p => p.IsUninherited).ToList()
-                : TimingPoints;
-
             OsuTimingPoint? result = null;
-            foreach (var pt in pts)
+            foreach (var pt in TimingPoints)
             {
-                if (pt.Time <= t) result = pt;
-                else break;
+                if (pt.Time > t) break;
+                if (!uninheritedOnly || pt.IsUninherited)
+                {
+                    result = pt;
+                }
             }
-            return result ?? pts.FirstOrDefault();
+
+            if (result != null) return result;
+
+            // Fallback to the first matching point
+            foreach (var pt in TimingPoints)
+            {
+                if (!uninheritedOnly || pt.IsUninherited)
+                {
+                    return pt;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

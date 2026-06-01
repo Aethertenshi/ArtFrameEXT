@@ -1,5 +1,6 @@
 using ManagedBass.Fx;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
@@ -173,6 +174,11 @@ namespace ArtFrame.ArtTypes
         public int Width => xnaTexture.Width;
         public int Height => xnaTexture.Height;
 
+        public Image(Texture2D texture)
+        {
+            xnaTexture = texture;
+        }
+
         public static implicit operator Microsoft.Xna.Framework.Graphics.Texture2D(Image t)
         {
             return t.xnaTexture;
@@ -261,5 +267,42 @@ namespace ArtFrame.ArtTypes
         }
 
         public static Rectangle Empty => new Rectangle(0, 0, 0, 0);
+    }
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    public struct Vector3
+    {
+        public float X;
+        public float Y;
+        public float Z;
+
+        public Vector3(float x, float y, float z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        public static implicit operator Microsoft.Xna.Framework.Vector3(Vector3 t)
+        {
+            return new Microsoft.Xna.Framework.Vector3(t.X, t.Y, t.Z);
+        }
+        public static implicit operator Vector3(Microsoft.Xna.Framework.Vector3 t)
+        {
+            return new Vector3(t.X, t.Y, t.Z);
+        }
+    }
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    public struct ArtVertex
+    {
+        public Vector3 Position;
+        public Color Color;
+
+        public ArtVertex(Vector3 position, Color color)
+        {
+            Position = position;
+            Color = color;
+        }
     }
 }

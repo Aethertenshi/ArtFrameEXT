@@ -18,8 +18,8 @@ namespace ArtFrame
         // Methods
         public static void UseAudioEngine()
         {
-            Bass.Configure(Configuration.PlaybackBufferLength, 20);
-            Bass.Configure(Configuration.UpdatePeriod, 5);
+            Bass.Configure(Configuration.PlaybackBufferLength, 100);
+            Bass.Configure(Configuration.UpdatePeriod, 10);
 
             if (!Bass.Init(-1, 44100, DeviceInitFlags.Latency, IntPtr.Zero))
                 Console.WriteLine($"BASS Init Error: {Bass.LastError}");
@@ -55,6 +55,40 @@ namespace ArtFrame
                 _musics.Add(musicName, tempoHandle);
             }
             return _musics[musicName];
+        }
+
+        public static void UnloadAllMusic()
+        {
+            foreach (int tempoHandle in _musics.Values)
+            {
+                Bass.StreamFree(tempoHandle);
+            }
+
+            _musics.Clear();
+        }
+
+        public static bool UnloadMusic(string musicName)
+        {
+            if (_musics.TryGetValue(musicName, out int tempoHandle))
+            {
+                // 1. Tell native BASS to completely free the audio buffers from unmanaged RAM.
+                // Because of BassFlags.FxFreeSource, this frees BOTH the tempo stream and the decoder stream.
+                bool freed = Bass.StreamFree(tempoHandle);
+
+                if (!freed)
+                {
+                    Console.WriteLine($"Warning: Failed to completely free BASS stream for {musicName}: {Bass.LastError}");
+                }
+
+                // 2. Erase the tracking handle from the C# dictionary.
+                // This ensures the GC can fully reclaim the string key and prevents handle-lookup leaks.
+                _musics.Remove(musicName);
+
+                return freed;
+            }
+
+            Console.WriteLine($"Music '{musicName}' was not found in cache; nothing to unload.");
+            return false;
         }
 
         public static int LoadSFX(string soundName, string soundPath)
@@ -110,6 +144,15 @@ namespace ArtFrame
         {
             if (_musics.TryGetValue(musicName, out int handle))
                 Bass.ChannelPause(handle);
+        }
+
+        public static bool IsMusicPlaying(string musicName)
+        {
+            if (_musics.TryGetValue(musicName, out int handle))
+            {
+                return Bass.ChannelIsActive(handle) == PlaybackState.Playing;
+            }
+            return false;
         }
 
         public static void StopMusic(string musicName)
@@ -270,6 +313,7 @@ namespace ArtFrame
             private readonly InterpolatingAudioClock _audioClock;
             private RhythmTracker _rhythmTracker;
             private readonly Func<float> _getRawMusicTime;
+            private readonly Func<bool>? _isPlayingProvider;
 
             // Configuration
             public float MusicOffset { get; set; } = -33f;
@@ -290,11 +334,13 @@ namespace ArtFrame
             public RhythmIndexer(
                 InterpolatingAudioClock audioClock,
                 RhythmTracker rhythmTracker,
-                Func<float> timeProvider)
+                Func<float> timeProvider,
+                Func<bool>? isPlayingProvider = null)
             {
                 _audioClock = audioClock;
                 _rhythmTracker = rhythmTracker;
                 _getRawMusicTime = timeProvider;
+                _isPlayingProvider = isPlayingProvider;
             }
 
             public void Reset(float expectedTimeSeconds)
@@ -316,9 +362,10 @@ namespace ArtFrame
                 if (Beatmap == null) return;
 
                 float rawBassTimeSeconds = _getRawMusicTime();
+                bool isPlaying = _isPlayingProvider?.Invoke() ?? true;
 
                 // Let the InterpolatingAudioClock handle the BASS latency natively
-                _audioClock.Update(rawBassTimeSeconds, dt, isAudioPlaying: true);
+                _audioClock.Update(rawBassTimeSeconds, dt, isAudioPlaying: isPlaying);
 
                 float smoothMusicTimeMs = (_audioClock.CurrentTime * 1000f) - MusicOffset;
                 _rhythmTracker.Update(smoothMusicTimeMs, Beatmap.ControlPoints);
