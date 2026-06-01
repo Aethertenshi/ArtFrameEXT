@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -24,8 +24,14 @@ public static class RealTimeInputEngine
     private static bool _anyKeyCurrentlyHeld = false;
     public static long LatestTimestampMs { get; private set; }
 
-    [DllImport("user32.dll")]
-    private static extern short GetAsyncKeyState(int vKey);
+    private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+    // Nested helper class to isolate Win32 P/Invoke and prevent JIT errors on non-Windows platforms.
+    private static class WindowsNative
+    {
+        [DllImport("user32.dll")]
+        public static extern short GetAsyncKeyState(int vKey);
+    }
 
     public static void Start()
     {
@@ -71,12 +77,40 @@ public static class RealTimeInputEngine
                 bool structuralAnyHeld = false;
                 long currentTicks = _sw.ElapsedMilliseconds;
 
+                // On non-Windows platforms, fetch standard FNA KeyboardState safely once per loop tick
+                Microsoft.Xna.Framework.Input.KeyboardState? fallbackState = null;
+                if (!IsWindows)
+                {
+                    try
+                    {
+                        fallbackState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+                    }
+                    catch
+                    {
+                        // Fallback in case of headless or test environments where FNA isn't fully initialized
+                    }
+                }
+
                 for (int i = 0; i < _trackedVirtualKeys.Length; i++)
                 {
-                    // Check if key is physically pressed down right now
-                    bool isDown = (GetAsyncKeyState(_trackedVirtualKeys[i]) & 0x8000) != 0;
+                    bool isDown = false;
+                    if (IsWindows)
+                    {
+                        try
+                        {
+                            isDown = (WindowsNative.GetAsyncKeyState(_trackedVirtualKeys[i]) & 0x8000) != 0;
+                        }
+                        catch
+                        {
+                            isDown = false;
+                        }
+                    }
+                    else if (fallbackState.HasValue)
+                    {
+                        isDown = fallbackState.Value.IsKeyDown((Microsoft.Xna.Framework.Input.Keys)_trackedVirtualKeys[i]);
+                    }
 
-                    // Edge detection: Transitioned from UP to DOWN since last 900Hz tick
+                    // Edge detection: Transitioned from UP to DOWN since last tick
                     if (isDown && !_lastRawStates[i])
                     {
                         _accumulatedPresses++;

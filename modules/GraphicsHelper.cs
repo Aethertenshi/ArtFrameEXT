@@ -196,6 +196,7 @@ namespace ArtFrame
         private static GraphicsDeviceManager graphics => instance.graphics;
         private static GameWindow window => instance.Window;
         private static GraphicsDevice graphicsDevice => instance.graphicsDevice;
+        private static GraphicsAdapter graphicsAdapter => instance.graphicsAdapter;
 
         public static RasterizerState? CurrentRasterizerState = null;
 
@@ -215,8 +216,11 @@ namespace ArtFrame
         internal static bool _spriteBatchOpen = false;
 
         // Public Variables
-        public static float ScreenHeight => graphicsDevice.Viewport.Height;
-        public static float ScreenWidth => graphicsDevice.Viewport.Width;
+        public static int ScreenHeight => graphicsDevice.Viewport.Height;
+        public static int ScreenWidth => graphicsDevice.Viewport.Width;
+        public static int DefaultScreenHeight => graphicsAdapter.CurrentDisplayMode.Height;
+        public static int DefaultScreenWidth => graphicsAdapter.CurrentDisplayMode.Width;
+        
         public static bool ShowPerformanceTelemetry { get; set; } = false;
 
         // Window Configuration

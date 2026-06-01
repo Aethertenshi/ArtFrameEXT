@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -23,7 +23,10 @@ public class HighPrecisionLimiter
             double remaining = targetTime - elapsed;
 
             // 1. Coarse wait: Sleep if we have plenty of time left (saves CPU)
-            if (remaining > 2.0)
+            // On Linux/Ubuntu, Thread.Sleep(1) has a minimum granularity of ~4-10ms,
+            // so we use a larger sleep threshold on non-Windows platforms to prevent capping the loop.
+            double sleepThreshold = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows) ? 2.0 : 10.0;
+            if (remaining > sleepThreshold)
             {
                 Thread.Sleep(1);
                 continue;

@@ -65,6 +65,7 @@ namespace ArtFrame
         internal GraphicsDeviceManager graphics { get; private set; }
         internal SpriteBatch spriteBatch { get; private set; }
         internal GraphicsDevice graphicsDevice { get; private set; }
+        internal GraphicsAdapter graphicsAdapter { get; private set; }
         internal Texture2D? pixel { get; private set; } = null;
         internal HighPrecisionLimiter _precisionLimiter = new HighPrecisionLimiter();
 
@@ -132,6 +133,7 @@ namespace ArtFrame
         protected override void Initialize()
         {
             graphicsDevice = GraphicsDevice; // ← moved here, now valid
+            graphicsAdapter = GraphicsAdapter.DefaultAdapter;
             spriteBatch = new SpriteBatch(GraphicsDevice);
             pixel = ArtTypes.Texture2D.CreateSinglePixel(Color.White);
             AudioHelper.UseAudioEngine();
