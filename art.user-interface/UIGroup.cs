@@ -1,6 +1,6 @@
 using System;
 
-namespace ArtFrameCore.UserInterface
+namespace Art2Core.UserInterface
 {
     /// <summary>
     /// A non-visual grouping container that aggregates multiple child elements under a single node.

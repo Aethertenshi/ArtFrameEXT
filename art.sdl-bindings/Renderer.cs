@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace ArtFrameCore.SdlBindings
+namespace Art2Core.SdlBindings
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct SDL_FPoint
@@ -58,6 +58,23 @@ namespace ArtFrameCore.SdlBindings
         }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SDL_Rect
+    {
+        public int x;
+        public int y;
+        public int w;
+        public int h;
+
+        public SDL_Rect(int x, int y, int w, int h)
+        {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+        }
+    }
+
     public enum SDL_GPUShaderFormat : uint
     {
         INVALID = 0,
@@ -80,8 +97,7 @@ namespace ArtFrameCore.SdlBindings
     {
         public uint code_size;
         public IntPtr code;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string entrypoint;
+        public IntPtr entrypoint;
         public SDL_GPUShaderFormat format;
         public SDL_GPUShaderStage stage;
         public uint num_samplers;
@@ -101,60 +117,98 @@ namespace ArtFrameCore.SdlBindings
     /// <summary>
     /// Static class handling the 2D hardware-accelerated rendering and geometry batching.
     /// </summary>
-    public static class Renderer
+    public static partial class Renderer
     {
-        private const string DllName = "SDL3.dll";
+        private const string DllName = "SDL3";
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr SDL_CreateGPURenderer(IntPtr device, IntPtr window);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial IntPtr SDL_CreateGPURenderer(IntPtr device, IntPtr window);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SDL_DestroyRenderer(IntPtr renderer);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial void SDL_DestroyRenderer(IntPtr renderer);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool SDL_RenderClear(IntPtr renderer);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static partial bool SDL_RenderClear(IntPtr renderer);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool SDL_RenderPresent(IntPtr renderer);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static partial bool SDL_RenderPresent(IntPtr renderer);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool SDL_SetRenderDrawColor(IntPtr renderer, byte r, byte g, byte b, byte a);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static partial bool SDL_SetRenderDrawColor(IntPtr renderer, byte r, byte g, byte b, byte a);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool SDL_RenderGeometry(
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static unsafe partial bool SDL_RenderGeometry(
             IntPtr renderer, 
             IntPtr texture, 
-            [In] SDL_Vertex[] vertices, 
+            SDL_Vertex* vertices, 
             int num_vertices, 
-            [In] int[]? indices, 
+            int* indices, 
             int num_indices);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr SDL_GetRendererName(IntPtr renderer);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial IntPtr SDL_GetRendererName(IntPtr renderer);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool SDL_RenderTexture(IntPtr renderer, IntPtr texture, IntPtr srcrect, ref SDL_FRect dstrect);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static partial bool SDL_RenderTexture(IntPtr renderer, IntPtr texture, IntPtr srcrect, ref SDL_FRect dstrect);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SDL_DestroyTexture(IntPtr texture);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial void SDL_DestroyTexture(IntPtr texture);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr SDL_GetGPURendererDevice(IntPtr renderer);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        public static partial IntPtr SDL_GetGPURendererDevice(IntPtr renderer);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr SDL_CreateGPUShader(IntPtr device, ref SDL_GPUShaderCreateInfo createinfo);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        public static partial IntPtr SDL_CreateGPUShader(IntPtr device, ref SDL_GPUShaderCreateInfo createinfo);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr SDL_CreateGPURenderState(IntPtr renderer, ref SDL_GPURenderStateCreateInfo createinfo);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        public static partial IntPtr SDL_CreateGPURenderState(IntPtr renderer, ref SDL_GPURenderStateCreateInfo createinfo);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_SetGPURenderState(IntPtr renderer, IntPtr state);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        public static partial bool SDL_SetGPURenderState(IntPtr renderer, IntPtr state);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_DestroyGPURenderState(IntPtr renderer, IntPtr state);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        public static partial void SDL_DestroyGPURenderState(IntPtr renderer, IntPtr state);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_ReleaseGPUShader(IntPtr device, IntPtr shader);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        public static partial void SDL_ReleaseGPUShader(IntPtr device, IntPtr shader);
+
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        public static partial IntPtr SDL_CreateTextureFromSurface(IntPtr renderer, IntPtr surface);
+
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        public static partial void SDL_DestroySurface(IntPtr surface);
+
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        public static partial IntPtr SDL_CreateSurface(int width, int height, uint format);
+
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        public static partial bool SDL_BlitSurface(IntPtr src, IntPtr srcrect, IntPtr dst, ref SDL_Rect dstrect);
 
         private static IntPtr _rendererPtr = IntPtr.Zero;
 
@@ -328,13 +382,18 @@ namespace ArtFrameCore.SdlBindings
 
             int vertexCount = _quadCount * 4;
             int indexCount = _quadCount * 6;
-
-            Console.WriteLine($"[ArtFrameCore] Flushing {_quadCount} quads to GPU (Texture: {_currentTexture})...");
             
-            // Render all accumulated geometry as a single hardware-accelerated batch
-            SDL_RenderGeometry(_rendererPtr, _currentTexture, _vertexBuffer, vertexCount, _indexBuffer, indexCount);
-
-            Console.WriteLine("[ArtFrameCore] Flush successful.");
+            // Render all accumulated geometry as a single hardware-accelerated batch using unsafe fixed pinning
+            unsafe
+            {
+                fixed (SDL_Vertex* pVertices = _vertexBuffer)
+                {
+                    fixed (int* pIndices = _indexBuffer)
+                    {
+                        SDL_RenderGeometry(_rendererPtr, _currentTexture, pVertices, vertexCount, pIndices, indexCount);
+                    }
+                }
+            }
 
             _quadCount = 0;
         }

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace ArtFrameCore.SdlBindings
+namespace Art2Core.SdlBindings
 {
     public enum WindowMode
     {
@@ -13,7 +13,7 @@ namespace ArtFrameCore.SdlBindings
     /// <summary>
     /// Static class for managing SDL3 window creation and event processing.
     /// </summary>
-    public static class Window
+    public static partial class Window
     {
         private const string DllName = "SDL3.dll";
 
@@ -28,23 +28,31 @@ namespace ArtFrameCore.SdlBindings
             public uint type;
         }
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool SDL_Init(uint flags);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static partial bool SDL_Init(uint flags);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SDL_Quit();
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial void SDL_Quit();
 
-        [DllImport(DllName, EntryPoint = "SDL_CreateWindow", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr SDL_CreateWindow([MarshalAs(UnmanagedType.LPUTF8Str)] string title, int w, int h, ulong flags);
+        [LibraryImport(DllName, EntryPoint = "SDL_CreateWindow", StringMarshalling = StringMarshalling.Utf8)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial IntPtr SDL_CreateWindow(string title, int w, int h, ulong flags);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SDL_DestroyWindow(IntPtr window);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial void SDL_DestroyWindow(IntPtr window);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool SDL_PollEvent(out SDL_Event ev);
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static partial bool SDL_PollEvent(out SDL_Event ev);
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr SDL_GetError();
+        [LibraryImport(DllName)]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial IntPtr SDL_GetError();
 
         private static IntPtr _windowPtr = IntPtr.Zero;
         private static bool _isInitialized = false;
@@ -73,6 +81,13 @@ namespace ArtFrameCore.SdlBindings
                     Console.WriteLine($"Failed to initialize SDL: {error}");
                     return false;
                 }
+                if (!SdlTtf.TTF_Init())
+                {
+                    string error = GetLastError();
+                    Console.WriteLine($"Failed to initialize SDL_ttf: {error}");
+                    SDL_Quit();
+                    return false;
+                }
                 _isInitialized = true;
             }
 
@@ -97,6 +112,7 @@ namespace ArtFrameCore.SdlBindings
             {
                 string error = GetLastError();
                 Console.WriteLine($"Failed to create window: {error}");
+                SdlTtf.TTF_Quit();
                 SDL_Quit();
                 _isInitialized = false;
                 return false;
@@ -152,6 +168,7 @@ namespace ArtFrameCore.SdlBindings
 
             if (_isInitialized)
             {
+                SdlTtf.TTF_Quit();
                 SDL_Quit();
                 _isInitialized = false;
             }

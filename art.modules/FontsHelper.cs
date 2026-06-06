@@ -1,147 +1,109 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using ArtFrameCore.SdlBindings;
+using System.Runtime.InteropServices;
+using Art2Core.SdlBindings;
 
-namespace ArtFrameCore.Modules
+namespace Art2Core.Modules
 {
-    /// <summary>
-    /// Represents the precise boundaries of a glyph in an atlas or plane coordinate system.
-    /// </summary>
-    public struct GlyphBounds
+    public struct GlyphInfo
     {
-        /// <summary>The left edge of the bounding box.</summary>
-        public float Left;
-        /// <summary>The bottom edge of the bounding box.</summary>
-        public float Bottom;
-        /// <summary>The right edge of the bounding box.</summary>
-        public float Right;
-        /// <summary>The top edge of the bounding box.</summary>
-        public float Top;
+        public float U1;
+        public float V1;
+        public float U2;
+        public float V2;
+        public int Width;
+        public int Height;
+        public int OffsetX;
+        public int OffsetY;
+        public int Advance;
+    }
 
-        /// <summary>
-        /// Constructs a new GlyphBounds bounding box.
-        /// </summary>
-        public GlyphBounds(float left, float bottom, float right, float top)
-        {
-            Left = left;
-            Bottom = bottom;
-            Right = right;
-            Top = top;
-        }
+    public class GlyphAtlas
+    {
+        public IntPtr Texture;
+        public int AtlasWidth;
+        public int AtlasHeight;
+        public float LineHeight;
+        public float Ascent;
+        public Dictionary<char, GlyphInfo> Glyphs = new();
     }
 
     /// <summary>
-    /// Represents structural layout data for a single Multi-channel Signed Distance Field (MSDF) character.
-    /// </summary>
-    public struct MtsdfGlyph
-    {
-        /// <summary>The horizontal advance distance for the character.</summary>
-        public float Advance;
-        /// <summary>The texture coordinates of the glyph in the atlas.</summary>
-        public GlyphBounds AtlasBounds;
-        /// <summary>The local vector space layout boundary of the glyph.</summary>
-        public GlyphBounds PlaneBounds;
-        /// <summary>Indicates if this glyph has texture atlas boundaries.</summary>
-        public bool HasAtlasBounds;
-        /// <summary>Indicates if this glyph has layout bounds in plane space.</summary>
-        public bool HasPlaneBounds;
-    }
-
-    /// <summary>
-    /// Represents a Multi-channel Signed Distance Field (MTSDF) Font asset loaded in memory.
-    /// </summary>
-    public class MtsdfFont
-    {
-        /// <summary>Gets the native SDL3 texture pointer for the font atlas.</summary>
-        public IntPtr Texture { get; internal set; }
-
-        /// <summary>Gets the width of the font atlas texture in pixels.</summary>
-        public int TextureWidth { get; internal set; }
-
-        /// <summary>Gets the height of the font atlas texture in pixels.</summary>
-        public int TextureHeight { get; internal set; }
-
-        /// <summary>Gets the distance range used during the distance field generation.</summary>
-        public float DistanceRange { get; internal set; }
-
-        /// <summary>Gets the baseline em size used to scale the font.</summary>
-        public float EmSize { get; internal set; }
-
-        // High-speed direct-lookup array for standard ASCII characters (0-255)
-        private readonly MtsdfGlyph[] _asciiGlyphs = new MtsdfGlyph[256];
-
-        // Dictionary fallback for extended/unicode characters (Chinese, Japanese, etc.)
-        private readonly Dictionary<char, MtsdfGlyph> _extendedGlyphs = new Dictionary<char, MtsdfGlyph>();
-
-        /// <summary>
-        /// Retrieves glyph layout metrics for a specific character with O(1) array fast-path lookup.
-        /// </summary>
-        public MtsdfGlyph GetGlyph(char c)
-        {
-            if (c < 256)
-            {
-                return _asciiGlyphs[c];
-            }
-            if (_extendedGlyphs.TryGetValue(c, out var glyph))
-            {
-                return glyph;
-            }
-            return _asciiGlyphs['?']; // Default fallback character
-        }
-
-        /// <summary>
-        /// Assigns a glyph to the lookup cache.
-        /// </summary>
-        internal void SetGlyph(char c, MtsdfGlyph glyph)
-        {
-            if (c < 256)
-            {
-                _asciiGlyphs[c] = glyph;
-            }
-            else
-            {
-                _extendedGlyphs[c] = glyph;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Manages high-performance loading, measuring, and drawing of Multi-channel Signed Distance Field (MTSDF) fonts.
+    /// Manages high-performance loading, measuring, and drawing of TrueType Fonts using SDL3_ttf with pre-rendered Glyph Atlases.
     /// </summary>
     public static class Fonts
     {
-        private static readonly Dictionary<string, MtsdfFont> _fonts = new Dictionary<string, MtsdfFont>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, string> _fontPaths = new(StringComparer.OrdinalIgnoreCase);
+        
+        // Cache of pre-built glyph atlases by (fontName, size)
+        private static readonly Dictionary<(string fontName, float size), GlyphAtlas> _atlases = new();
 
         /// <summary>
-        /// Loads an atlas font from metadata JSON and texture files.
+        /// Registers a TrueType font path under a specific name.
         /// </summary>
-        /// <param name="fontName">The unique name to register this font as.</param>
-        /// <param name="jsonPath">The path to the font atlas metadata JSON file.</param>
-        /// <param name="texturePath">The path to the font atlas texture image file.</param>
-        public static void LoadAtlasFont(string fontName, string jsonPath, string texturePath)
+        /// <param name="fontName">The registered name of the font.</param>
+        /// <param name="fontPath">The filesystem path to the TTF font file.</param>
+        public static void LoadFont(string fontName, string fontPath)
         {
             if (string.IsNullOrEmpty(fontName)) throw new ArgumentNullException(nameof(fontName));
-            if (string.IsNullOrEmpty(jsonPath)) throw new ArgumentNullException(nameof(jsonPath));
-            if (string.IsNullOrEmpty(texturePath)) throw new ArgumentNullException(nameof(texturePath));
+            if (string.IsNullOrEmpty(fontPath)) throw new ArgumentNullException(nameof(fontPath));
 
-            var font = LoadMtsdfFont(jsonPath, texturePath);
-            _fonts[fontName] = font;
+            if (!File.Exists(fontPath))
+            {
+                throw new FileNotFoundException($"Font file not found: {fontPath}");
+            }
+
+            _fontPaths[fontName] = fontPath;
         }
 
         /// <summary>
-        /// Measures the size of a text string based on character advances and line counts.
+        /// Kept for backwards compatibility. Registers a font from the specified TTF path.
         /// </summary>
-        /// <param name="fontName">The registered name of the font to use.</param>
-        /// <param name="text">The string to measure.</param>
-        /// <param name="scale">The rendering scale factor.</param>
-        /// <returns>A tuple representing the width and height of the measured text.</returns>
+        public static void LoadAtlasFont(string fontName, string jsonPath, string texturePath)
+        {
+            Console.WriteLine($"[Fonts] LoadAtlasFont called for '{fontName}' (json: {jsonPath}, texture: {texturePath}).");
+            
+            // Try to find a TTF file in the same folder or with the same name.
+            string baseDir = Path.GetDirectoryName(jsonPath) ?? "";
+            string baseName = Path.GetFileNameWithoutExtension(jsonPath);
+            string ttfPath = Path.Combine(baseDir, baseName + ".ttf");
+
+            if (File.Exists(ttfPath))
+            {
+                LoadFont(fontName, ttfPath);
+            }
+            else
+            {
+                string localArial = Path.Combine(baseDir, "arial.ttf");
+                if (File.Exists(localArial))
+                {
+                    LoadFont(fontName, localArial);
+                }
+                else
+                {
+                    string systemFont = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "arial.ttf");
+                    if (File.Exists(systemFont))
+                    {
+                        LoadFont(fontName, systemFont);
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException($"Could not load font '{fontName}': TTF fallback not found.");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Measures the size of a text string based on the glyph atlas.
+        /// </summary>
         public static (float Width, float Height) MeasureText(string fontName, string text, float scale = 1f)
         {
-            if (!_fonts.TryGetValue(fontName, out var font) || string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text))
                 return (0f, 0f);
 
+            var atlas = GetAtlas(fontName, scale);
             float maxX = 0f;
             float curX = 0f;
             int lines = 1;
@@ -150,206 +112,236 @@ namespace ArtFrameCore.Modules
             {
                 if (c == '\n')
                 {
-                    maxX = Math.Max(maxX, curX);
+                    if (curX > maxX) maxX = curX;
                     curX = 0f;
                     lines++;
                     continue;
                 }
 
-                var glyph = font.GetGlyph(c);
-                curX += glyph.Advance;
+                char lookupChar = c;
+                if (!atlas.Glyphs.ContainsKey(lookupChar))
+                {
+                    lookupChar = '?';
+                }
+
+                if (atlas.Glyphs.TryGetValue(lookupChar, out var glyph))
+                {
+                    curX += glyph.Advance;
+                }
             }
 
-            return (Math.Max(maxX, curX) * scale, lines * scale);
+            if (curX > maxX) maxX = curX;
+
+            return (maxX, lines * atlas.LineHeight);
         }
 
         /// <summary>
-        /// Measures the precise spatial boundaries of the glyph geometry.
+        /// Measures the precise spatial boundaries of the text.
         /// </summary>
-        /// <param name="fontName">The registered name of the font.</param>
-        /// <param name="text">The string to measure.</param>
-        /// <param name="scale">The rendering scale factor.</param>
-        /// <returns>A tuple of coordinates representing layout offset and bounding dimensions.</returns>
         public static ((float X, float Y) Offset, (float Width, float Height) Size) MeasureTextBounds(string fontName, string text, float scale = 1f)
         {
-            if (!_fonts.TryGetValue(fontName, out var font) || string.IsNullOrEmpty(text))
-                return ((0f, 0f), (0f, 0f));
-
-            float minX = float.MaxValue;
-            float maxX = float.MinValue;
-            float minY = float.MaxValue;
-            float maxY = float.MinValue;
-
-            float curX = 0f;
-            float curY = 0f;
-            float padding = font.DistanceRange / font.EmSize;
-            bool hasGlyphs = false;
-
-            foreach (char c in text)
-            {
-                if (c == '\n')
-                {
-                    curX = 0f;
-                    curY += 1f;
-                    continue;
-                }
-
-                var glyph = font.GetGlyph(c);
-
-                if (glyph.HasPlaneBounds)
-                {
-                    hasGlyphs = true;
-
-                    float left = curX + glyph.PlaneBounds.Left - padding;
-                    float right = curX + glyph.PlaneBounds.Right + padding;
-                    float top = curY - glyph.PlaneBounds.Top - padding;
-                    float bottom = curY - glyph.PlaneBounds.Bottom + padding;
-
-                    if (left < minX) minX = left;
-                    if (right > maxX) maxX = right;
-                    if (top < minY) minY = top;
-                    if (bottom > maxY) maxY = bottom;
-                }
-
-                curX += glyph.Advance;
-            }
-
-            if (!hasGlyphs) return ((0f, 0f), (0f, 0f));
-
-            return ((minX * scale, minY * scale), ((maxX - minX) * scale, (maxY - minY) * scale));
+            var size = MeasureText(fontName, text, scale);
+            return ((0f, 0f), size);
         }
 
         /// <summary>
-        /// Draws a text string at the specified coordinates using hardware-accelerated batch rendering.
+        /// Draws a text string at the specified coordinates using a pre-rendered Glyph Atlas.
         /// </summary>
-        /// <param name="fontName">The registered name of the font to use.</param>
-        /// <param name="text">The text string to draw.</param>
-        /// <param name="x">The screen X coordinate.</param>
-        /// <param name="y">The screen Y coordinate.</param>
-        /// <param name="scale">The rendering scale factor.</param>
-        /// <param name="color">The drawing color for the text.</param>
         public static void DrawText(string fontName, string text, float x, float y, float scale, SDL_FColor color)
         {
-            if (!_fonts.TryGetValue(fontName, out var font) || string.IsNullOrEmpty(text))
-                return;
+            if (string.IsNullOrEmpty(text)) return;
 
-            float cursorX = 0f;
-            float cursorY = 0f;
-            float padding = font.DistanceRange / font.EmSize;
+            var atlas = GetAtlas(fontName, scale);
+
+            float cx = x;
+            float cy = y + atlas.Ascent; // Align base of text from the top-left coordinate system
 
             foreach (char c in text)
             {
                 if (c == '\n')
                 {
-                    cursorX = 0f;
-                    cursorY += 1f;
+                    cx = x;
+                    cy += atlas.LineHeight;
                     continue;
                 }
 
-                var glyph = font.GetGlyph(c);
-
-                if (glyph.HasAtlasBounds)
+                char lookupChar = c;
+                if (!atlas.Glyphs.ContainsKey(lookupChar))
                 {
-                    float left = cursorX + glyph.PlaneBounds.Left - padding;
-                    float top = cursorY - glyph.PlaneBounds.Top - padding;
-                    float width = glyph.PlaneBounds.Right - glyph.PlaneBounds.Left + (padding * 2f);
-                    float height = glyph.PlaneBounds.Top - glyph.PlaneBounds.Bottom + (padding * 2f);
-
-                    float drawX = x + (left * scale);
-                    float drawY = y + (top * scale);
-                    float drawW = width * scale;
-                    float drawH = height * scale;
-
-                    // Calculate UV coordinates mapped onto the font atlas
-                    float u1 = glyph.AtlasBounds.Left / font.TextureWidth;
-                    float v1 = (font.TextureHeight - glyph.AtlasBounds.Top) / font.TextureHeight;
-                    float u2 = glyph.AtlasBounds.Right / font.TextureWidth;
-                    float v2 = (font.TextureHeight - glyph.AtlasBounds.Bottom) / font.TextureHeight;
-
-                    Renderer.DrawTextureQuad(font.Texture, drawX, drawY, drawW, drawH, u1, v1, u2, v2, color);
+                    lookupChar = '?';
                 }
 
-                cursorX += glyph.Advance;
+                if (atlas.Glyphs.TryGetValue(lookupChar, out var glyph))
+                {
+                    float drawX = cx + glyph.OffsetX;
+                    float drawY = cy - glyph.OffsetY;
+                    float drawW = glyph.Width;
+                    float drawH = glyph.Height;
+
+                    Renderer.DrawTextureQuad(atlas.Texture, drawX, drawY, drawW, drawH, glyph.U1, glyph.V1, glyph.U2, glyph.V2, color);
+
+                    cx += glyph.Advance;
+                }
             }
         }
 
-        /// <summary>
-        /// Internally parses high-performance font atlas JSON metadata and loads the SDL texture.
-        /// </summary>
-        private static MtsdfFont LoadMtsdfFont(string jsonPath, string texturePath)
+        private static GlyphAtlas GetAtlas(string fontName, float size)
         {
-            var jsonContent = File.ReadAllText(jsonPath);
-            using var doc = JsonDocument.Parse(jsonContent);
-            var root = doc.RootElement;
+            // Standardize size key
+            float roundedSize = MathF.Round(size);
+            if (roundedSize < 1) roundedSize = 1;
 
-            IntPtr renderer = Renderer.Pointer;
-            if (renderer == IntPtr.Zero)
+            var key = (fontName.ToLowerInvariant(), roundedSize);
+            if (_atlases.TryGetValue(key, out var atlas))
             {
-                throw new InvalidOperationException("[ArtFrameCore] Cannot load font: SDL renderer is not initialized.");
+                return atlas;
             }
 
-            IntPtr texture = SdlImage.LoadTexture(renderer, texturePath);
-            if (texture == IntPtr.Zero)
+            if (!_fontPaths.TryGetValue(fontName, out var path))
             {
-                throw new FileNotFoundException($"[ArtFrameCore] Failed to load font texture from '{texturePath}'");
+                string systemFont = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "arial.ttf");
+                if (File.Exists(systemFont))
+                {
+                    _fontPaths[fontName] = systemFont;
+                    path = systemFont;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"Font '{fontName}' has not been registered and no system fallback font was found.");
+                }
             }
 
-            // In SDL3, we query texture dimensions directly
-            int w = 512, h = 512; // Standard fallback sizes
-            // We can query using standard SDL3 call if needed, but since MSDF JSON typically lists texture size, let's read it or use a default:
-            var atlasElement = root.GetProperty("atlas");
-            if (atlasElement.TryGetProperty("width", out var widthProp)) w = widthProp.GetInt32();
-            if (atlasElement.TryGetProperty("height", out var heightProp)) h = heightProp.GetInt32();
-
-            var font = new MtsdfFont
+            IntPtr fontPtr = SdlTtf.TTF_OpenFont(path, roundedSize);
+            if (fontPtr == IntPtr.Zero)
             {
-                Texture = texture,
-                TextureWidth = w,
-                TextureHeight = h,
-                DistanceRange = atlasElement.GetProperty("distanceRange").GetSingle(),
-                EmSize = atlasElement.GetProperty("size").GetSingle()
-            };
-
-            // Prime direct lookup table with empty fallback glyphs
-            for (int i = 0; i < 256; i++)
-            {
-                font.SetGlyph((char)i, new MtsdfGlyph { Advance = 0.25f });
+                throw new Exception($"Failed to open font '{fontName}' from '{path}' at size {roundedSize}");
             }
 
-            foreach (var glyphElement in root.GetProperty("glyphs").EnumerateArray())
+            try
             {
-                char c = (char)glyphElement.GetProperty("unicode").GetInt32();
-                var glyph = new MtsdfGlyph 
-                { 
-                    Advance = glyphElement.GetProperty("advance").GetSingle() 
+                atlas = CreateGlyphAtlas(fontPtr, roundedSize);
+                _atlases[key] = atlas;
+                return atlas;
+            }
+            finally
+            {
+                SdlTtf.TTF_CloseFont(fontPtr);
+            }
+        }
+
+        private static GlyphAtlas CreateGlyphAtlas(IntPtr fontPtr, float size)
+        {
+            int fontHeight = SdlTtf.TTF_GetFontHeight(fontPtr);
+            int fontAscent = SdlTtf.TTF_GetFontAscent(fontPtr);
+
+            int atlasWidth = 512;
+            int atlasHeight = 512;
+
+            // Render a test character to query the native pixel format returned by SDL3_ttf
+            uint format = 0x16362004u; // Default to SDL_PIXELFORMAT_ARGB8888
+            IntPtr testSurfPtr = SdlTtf.TTF_RenderGlyph_Blended(fontPtr, 'A', new SDL_Color(255, 255, 255, 255));
+            if (testSurfPtr != IntPtr.Zero)
+            {
+                SDL_Surface surf = Marshal.PtrToStructure<SDL_Surface>(testSurfPtr);
+                format = surf.format;
+                Renderer.SDL_DestroySurface(testSurfPtr);
+            }
+
+            IntPtr atlasSurfacePtr = Renderer.SDL_CreateSurface(atlasWidth, atlasHeight, format);
+            if (atlasSurfacePtr == IntPtr.Zero)
+            {
+                throw new Exception("Failed to create blank surface for font glyph atlas.");
+            }
+
+            int currentX = 0;
+            int currentY = 0;
+            int rowHeight = 0;
+            int padding = 2; // Prevent bleeding
+
+            var glyphs = new Dictionary<char, GlyphInfo>();
+
+            // Pack printable ASCII range (32 to 126)
+            for (uint ch = 32; ch <= 126; ch++)
+            {
+                IntPtr glyphSurfPtr = SdlTtf.TTF_RenderGlyph_Blended(fontPtr, ch, new SDL_Color(255, 255, 255, 255));
+                if (glyphSurfPtr == IntPtr.Zero) continue;
+
+                SDL_Surface glyphSurf = Marshal.PtrToStructure<SDL_Surface>(glyphSurfPtr);
+                int gw = glyphSurf.w;
+                int gh = glyphSurf.h;
+
+                if (currentX + gw + padding > atlasWidth)
+                {
+                    currentX = 0;
+                    currentY += rowHeight + padding;
+                    rowHeight = 0;
+                }
+
+                if (currentY + gh + padding > atlasHeight)
+                {
+                    Console.WriteLine("[Fonts] Warning: glyph atlas surface is full.");
+                    Renderer.SDL_DestroySurface(glyphSurfPtr);
+                    break;
+                }
+
+                var dstRect = new SDL_Rect(currentX, currentY, gw, gh);
+                Renderer.SDL_BlitSurface(glyphSurfPtr, IntPtr.Zero, atlasSurfacePtr, ref dstRect);
+
+                SdlTtf.TTF_GetGlyphMetrics(fontPtr, ch, out int minx, out int maxx, out int miny, out int maxy, out int advance);
+
+                var info = new GlyphInfo
+                {
+                    U1 = (float)currentX / (float)atlasWidth,
+                    V1 = (float)currentY / (float)atlasHeight,
+                    U2 = (float)(currentX + gw) / (float)atlasWidth,
+                    V2 = (float)(currentY + gh) / (float)atlasHeight,
+                    Width = gw,
+                    Height = gh,
+                    OffsetX = 0,
+                    OffsetY = fontAscent,
+                    Advance = advance
                 };
+                glyphs[(char)ch] = info;
 
-                if (glyphElement.TryGetProperty("atlasBounds", out var ab))
-                {
-                    glyph.HasAtlasBounds = true;
-                    glyph.AtlasBounds = new GlyphBounds(
-                        ab.GetProperty("left").GetSingle(),
-                        ab.GetProperty("bottom").GetSingle(),
-                        ab.GetProperty("right").GetSingle(),
-                        ab.GetProperty("top").GetSingle()
-                    );
-                }
+                currentX += gw + padding;
+                if (gh > rowHeight) rowHeight = gh;
 
-                if (glyphElement.TryGetProperty("planeBounds", out var pb))
-                {
-                    glyph.HasPlaneBounds = true;
-                    glyph.PlaneBounds = new GlyphBounds(
-                        pb.GetProperty("left").GetSingle(),
-                        pb.GetProperty("bottom").GetSingle(),
-                        pb.GetProperty("right").GetSingle(),
-                        pb.GetProperty("top").GetSingle()
-                    );
-                }
-
-                font.SetGlyph(c, glyph);
+                Renderer.SDL_DestroySurface(glyphSurfPtr);
             }
 
-            return font;
+            IntPtr texturePtr = Renderer.SDL_CreateTextureFromSurface(Renderer.Pointer, atlasSurfacePtr);
+            Renderer.SDL_DestroySurface(atlasSurfacePtr);
+
+            if (texturePtr == IntPtr.Zero)
+            {
+                throw new Exception("Failed to upload glyph atlas surface to GPU texture.");
+            }
+
+            return new GlyphAtlas
+            {
+                Texture = texturePtr,
+                AtlasWidth = atlasWidth,
+                AtlasHeight = atlasHeight,
+                LineHeight = fontHeight,
+                Ascent = fontAscent,
+                Glyphs = glyphs
+            };
+        }
+
+        /// <summary>
+        /// Clears all loaded atlases and textures.
+        /// </summary>
+        public static void Shutdown()
+        {
+            foreach (var atlas in _atlases.Values)
+            {
+                if (atlas.Texture != IntPtr.Zero)
+                {
+                    Renderer.DestroyTexture(atlas.Texture);
+                }
+            }
+            _atlases.Clear();
+            _fontPaths.Clear();
         }
     }
 }

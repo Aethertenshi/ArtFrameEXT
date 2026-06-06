@@ -1,6 +1,6 @@
 using System;
 
-namespace ArtFrameCore.UserInterface
+namespace Art2Core.UserInterface
 {
     /// <summary>
     /// A visual UI panel/box that renders a solid background.

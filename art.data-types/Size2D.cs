@@ -1,6 +1,6 @@
 using System;
 
-namespace ArtFrameCore.DataType
+namespace Art2Core.DataType
 {
     /// <summary>
     /// A Roblox UDim2-style 2D size struct.

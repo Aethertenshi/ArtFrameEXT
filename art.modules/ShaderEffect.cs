@@ -1,14 +1,14 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using ArtFrameCore.SdlBindings;
+using Art2Core.SdlBindings;
 
-namespace ArtFrameCore.Modules
+namespace Art2Core.Modules
 {
     /// <summary>
     /// Represents a custom hardware-accelerated GPU Fragment Shader and its active Renderer State.
     /// </summary>
-    public class ShaderEffect : IDisposable
+    public partial class ShaderEffect : IDisposable
     {
         private IntPtr _shaderPtr = IntPtr.Zero;
         private IntPtr _renderStatePtr = IntPtr.Zero;
@@ -42,6 +42,7 @@ namespace ArtFrameCore.Modules
 
             byte[] shaderBytes = File.ReadAllBytes(shaderBinaryPath);
             GCHandle pinnedArray = GCHandle.Alloc(shaderBytes, GCHandleType.Pinned);
+            IntPtr entrypointPtr = Marshal.StringToCoTaskMemUTF8(entrypoint);
 
             try
             {
@@ -49,7 +50,7 @@ namespace ArtFrameCore.Modules
                 {
                     code_size = (uint)shaderBytes.Length,
                     code = pinnedArray.AddrOfPinnedObject(),
-                    entrypoint = entrypoint,
+                    entrypoint = entrypointPtr,
                     format = format,
                     stage = SDL_GPUShaderStage.FRAGMENT,
                     num_samplers = 1, // At least 1 texture sampler bound by default
@@ -80,11 +81,16 @@ namespace ArtFrameCore.Modules
             finally
             {
                 pinnedArray.Free();
+                if (entrypointPtr != IntPtr.Zero)
+                {
+                    Marshal.FreeCoTaskMem(entrypointPtr);
+                }
             }
         }
 
-        [DllImport("SDL3.dll", EntryPoint = "SDL_GetError", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr SDL3_GetError();
+        [LibraryImport("SDL3.dll", EntryPoint = "SDL_GetError")]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static partial IntPtr SDL3_GetError();
 
         /// <summary>
         /// Releases all allocated native GPU resources.

@@ -5,6 +5,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="SDL3_image.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SDL3_ttf.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
 	  <None Update="art.shaders/**/*">
@@ -22,6 +26,9 @@
   <ItemGroup>
     <Folder Include="art.modules\" />
     <Folder Include="art.data-types\" />
+    <Folder Include="art.sdl-bindings\" />
+    <Folder Include="art.shaders\" />
+    <Folder Include="art.user-interface\" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 using System;
-using ArtFrameCore.SdlBindings;
+using Art2Core.SdlBindings;
 
-namespace ArtFrameCore.UserInterface
+namespace Art2Core.UserInterface
 {
     /// <summary>
     /// A visual UI component that renders a hardware-accelerated image (PNG or JPG) from a file.

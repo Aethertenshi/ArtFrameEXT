@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ArtFrameCore.SdlBindings;
-using ArtFrameCore.DataType;
+using Art2Core.SdlBindings;
+using Art2Core.DataType;
 
-namespace ArtFrameCore.UserInterface
+namespace Art2Core.UserInterface
 {
     /// <summary>
     /// Base class representing a node in the UI hierarchy tree.

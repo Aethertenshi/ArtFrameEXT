@@ -1,8 +1,8 @@
 using System;
-using ArtFrameCore.SdlBindings;
-using ArtFrameCore.UserInterface;
+using Art2Core.SdlBindings;
+using Art2Core.UserInterface;
 
-namespace ArtFrameCore.Modules
+namespace Art2Core.Modules
 {
     /// <summary>
     /// Base class for the game application. Hides the low-level rendering and event loop,
