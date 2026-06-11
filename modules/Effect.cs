@@ -48,7 +48,7 @@ namespace ArtFrame.Effects
 
     public class GaussianBlurEffect : IArtEffect
     {
-        private Effect _shader;
+        private Effect? _shader;
         private RenderTarget2D? _pass1Target;
 
         // Developer-friendly properties!

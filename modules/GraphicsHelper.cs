@@ -104,8 +104,11 @@ namespace ArtFrame
             if (instance == null || instance.GraphicsDevice == null)
                 throw new InvalidOperationException("Art manager must be initialized before loading images.");
 
-            if (imagePool.ContainsKey(imageName))
-                return imagePool[imageName];
+            lock (imagePool)
+            {
+                if (imagePool.ContainsKey(imageName))
+                    return imagePool[imageName];
+            }
 
             // 1. Load the massive original image temporarily
             using FileStream stream = File.OpenRead(imagePath);
@@ -141,7 +144,10 @@ namespace ArtFrame
 
             // 7. Wrap the 10KB renderTarget into your custom Image class and store it
             var wrappedImage = new Image(renderTarget); // Assuming your wrapper accepts Texture2D
-            imagePool.Add(imageName, wrappedImage);
+            lock (imagePool)
+            {
+                imagePool[imageName] = wrappedImage;
+            }
 
             return wrappedImage;
         }
@@ -150,8 +156,11 @@ namespace ArtFrame
             if (instance == null || instance.GraphicsDevice == null)
                 throw new InvalidOperationException("Art manager must be initialized before loading images.");
 
-            if (imagePool.ContainsKey(imageName))
-                return imagePool[imageName];
+            lock (imagePool)
+            {
+                if (imagePool.ContainsKey(imageName))
+                    return imagePool[imageName];
+            }
 
             throw new Exception($"Texture '{imageName}' not found. Make sure to call UseTexture with the path at least once before using it.");
         }
@@ -160,33 +169,44 @@ namespace ArtFrame
             if (instance == null || instance.GraphicsDevice == null)
                 throw new InvalidOperationException("Art manager must be initialized before loading images.");
 
-            if (imagePool.ContainsKey(imageName))
-                return imagePool[imageName];
+            lock (imagePool)
+            {
+                if (imagePool.ContainsKey(imageName))
+                    return imagePool[imageName];
+            }
 
             using FileStream stream = File.OpenRead(imagePath);
-            imagePool.Add(imageName, Microsoft.Xna.Framework.Graphics.Texture2D.FromStream(graphicsDevice, stream));
+            var texture = Microsoft.Xna.Framework.Graphics.Texture2D.FromStream(graphicsDevice, stream);
+            lock (imagePool)
+            {
+                imagePool[imageName] = texture;
+            }
 
-            return imagePool[imageName];
+            return texture;
         }
         public static bool UnloadImage(string imageName)
         {
-            if (imagePool.TryGetValue(imageName, out Image image))
+            Image image;
+            lock (imagePool)
             {
-                // 1. Dispose the underlying XNA/FNA GPU texture resource immediately
-                image.xnaTexture?.Dispose();
-
-                // 2. Remove the reference from the tracking pool so the GC can claim the wrapper
+                if (!imagePool.TryGetValue(imageName, out image))
+                {
+                    return false;
+                }
                 imagePool.Remove(imageName);
-
-                return true;
             }
 
-            return false;
+            // Dispose texture outside lock to minimize contention
+            image.xnaTexture?.Dispose();
+            return true;
         }
         public static void UnloadImages()
         {
-            foreach (Image image in imagePool.Values) image.xnaTexture.Dispose();
-            imagePool.Clear();
+            lock (imagePool)
+            {
+                foreach (Image image in imagePool.Values) image.xnaTexture?.Dispose();
+                imagePool.Clear();
+            }
         }
     }
     public static class GraphicsHelper
@@ -245,6 +265,7 @@ namespace ArtFrame
         //}
         public static void SetVSyncMode()
         {
+            Engine.HighPrecisionLimiter.SetMaxFps(120); // Sync to typical display refresh rates (60Hz, 120Hz, etc.)
             instance.IsFixedTimeStep = false;
             graphics.SynchronizeWithVerticalRetrace = true;
             graphics.ApplyChanges();

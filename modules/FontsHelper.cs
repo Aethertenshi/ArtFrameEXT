@@ -7,7 +7,7 @@ namespace ArtFrame
     // Helper Class and Struct
     public class MtsdfFont
     {
-        public Microsoft.Xna.Framework.Graphics.Texture2D Texture { get; internal set; }
+        public Microsoft.Xna.Framework.Graphics.Texture2D? Texture { get; internal set; }
         public float DistanceRange { get; internal set; }
         public float EmSize { get; internal set; }
         public Dictionary<char, MtsdfGlyph> Glyphs { get; internal set; } = new();
@@ -22,8 +22,8 @@ namespace ArtFrame
     }
     public class AtlasData
     {
-        public AtlasMetrics Metrics { get; set; }
-        public List<GlyphData> Glyphs { get; set; }
+        public AtlasMetrics? Metrics { get; set; }
+        public List<GlyphData>? Glyphs { get; set; }
     }
 
     public class AtlasMetrics
@@ -39,8 +39,8 @@ namespace ArtFrame
     {
         public int Unicode { get; set; }
         public float Advance { get; set; }
-        public PlaneBounds PlaneBounds { get; set; } // The "Vector" bounds
-        public AtlasBounds AtlasBounds { get; set; } // The Texture UV bounds
+        public PlaneBounds? PlaneBounds { get; set; } // The "Vector" bounds
+        public AtlasBounds? AtlasBounds { get; set; } // The Texture UV bounds
     }
     public record PlaneBounds(float Left, float Bottom, float Right, float Top);
     public record AtlasBounds(float Left, float Bottom, float Right, float Top);
@@ -51,20 +51,20 @@ namespace ArtFrame
         // Static Reference and Variables
         private static Art instance => Art.Instance;
         private static GraphicsDevice graphicsDevice => instance.graphicsDevice;
-        private static Effect _fontShader;
+        private static Effect? _fontShader;
         private static Dictionary<string, MtsdfFont> _fonts = new();
 
         // Rendering Methods
         public static void DrawTextPro(
-           string fontName,
-           string text,
-           Vector2 position,
-           Vector2 origin,     // screen pixels, pass MeasureText()/2 to center
-           float rotation,
-           float scale,
-           Color color,
-           float strokeWidth = 0f,
-           Color? strokeColor = null)
+            string fontName,
+            string text,
+            Vector2 position,
+            Vector2 origin,     // screen pixels, pass MeasureText()/2 to center
+            float rotation,
+            float scale,
+            Color color,
+            float strokeWidth = 0f,
+            Color? strokeColor = null)
         {
             if (!_fonts.TryGetValue(fontName, out var font)) return;
 
@@ -187,13 +187,14 @@ namespace ArtFrame
 
         public static void LoadAtlasFont(string fontName, string jsonPath, string texturePath)
         {
+            if (_fonts.ContainsKey(fontName)) return;
             _fonts.Add(fontName, LoadMtsdfFont(jsonPath, texturePath));
         }
 
         internal static void SetEffectParameters(string fontName)
         {
             var font = _fonts[fontName];
-            _fontShader?.Parameters["atlasSize"].SetValue(new Vector2(font.Texture.Width, font.Texture.Height));
+            _fontShader?.Parameters["atlasSize"].SetValue(new Vector2(font.Texture != null ? font.Texture.Width : 0, font.Texture != null ? font.Texture.Height : 0));
             _fontShader?.Parameters["pxRange"].SetValue(font.DistanceRange);
         }
 
@@ -235,7 +236,7 @@ namespace ArtFrame
 
                     Rectangle src = new Rectangle(
                         (int)glyph.AtlasBounds.X,
-                        font.Texture.Height - (int)glyph.AtlasBounds.W,
+                        (font.Texture != null ? font.Texture.Height : 0) - (int)glyph.AtlasBounds.W,
                         (int)(glyph.AtlasBounds.Z - glyph.AtlasBounds.X),
                         (int)(glyph.AtlasBounds.W - glyph.AtlasBounds.Y)
                     );

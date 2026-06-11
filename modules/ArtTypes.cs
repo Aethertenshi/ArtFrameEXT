@@ -127,7 +127,18 @@ namespace ArtFrame.ArtTypes
         public static Vector2 operator /(Vector2 a, float scalar) => new Vector2(a.X / scalar, a.Y / scalar);
         public static bool operator ==(Vector2 a, Vector2 b) => a.X == b.X && a.Y == b.Y;
         public static bool operator !=(Vector2 a, Vector2 b) => a.X != b.X || a.Y != b.Y;
+        
+        public override bool Equals(object? obj)
+        {
+            if (obj is not Vector2 other) return false;
 
+            return X == other.X && Y == other.Y;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
+        }
 
         // Methods
         public float Length() => (float)Math.Sqrt(X * X + Y * Y);

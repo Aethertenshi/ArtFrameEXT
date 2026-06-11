@@ -1,4 +1,4 @@
-﻿using ArtFrame.ArtTypes;
+using ArtFrame.ArtTypes;
 
 namespace ArtFrame.UIModifier
 {
@@ -114,6 +114,47 @@ namespace ArtFrame.UIModifier
 
                 children[i].position = UDim2.FromOffset(x, y);
                 children[i].size = UDim2.FromOffset(resolvedCell.X, resolvedCell.Y);
+            }
+        }
+    }
+
+    public class UIListLayout : IFrameModifier
+    {
+        public Axis direction { get; set; } = Axis.Vertical;
+        public float spacing { get; set; } = 4f;
+        public float paddingX { get; set; } = 0f;
+        public float paddingY { get; set; } = 0f;
+
+        public void Apply(System.Collections.Generic.List<ArtObject> children, Vector2 frameSize)
+        {
+            var sorted = System.Linq.Enumerable.ToList(System.Linq.Enumerable.OrderBy(children, c => c.LayoutOrder));
+
+            float cursor = direction == Axis.Vertical ? paddingY : paddingX;
+
+            foreach (var child in sorted)
+            {
+                if (child.skipDraw) continue;
+
+                Vector2 childSize = child.GetResolvedSize(frameSize);
+
+                if (direction == Axis.Vertical)
+                {
+                    child.anchorY = AnchorY.Top;
+                    child.position = new UDim2(child.position.ScaleX, child.position.ScaleY, child.position.OffsetX, cursor);
+                    
+                    // Scale spacing for collapsing elements to prevent layout snapping (using 40px target height as reference)
+                    float scale = childSize.Y >= 40f ? 1f : System.Math.Max(0f, childSize.Y / 40f);
+                    cursor += childSize.Y + spacing * scale;
+                }
+                else
+                {
+                    child.anchorX = AnchorX.Left;
+                    child.position = new UDim2(child.position.ScaleX, child.position.ScaleY, cursor, child.position.OffsetY);
+                    
+                    // Scale spacing for horizontal elements
+                    float scale = childSize.X >= 40f ? 1f : System.Math.Max(0f, childSize.X / 40f);
+                    cursor += childSize.X + spacing * scale;
+                }
             }
         }
     }

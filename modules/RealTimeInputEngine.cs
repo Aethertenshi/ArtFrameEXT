@@ -5,7 +5,7 @@ using System.Threading;
 
 public static class RealTimeInputEngine
 {
-    private static Thread _inputThread;
+    private static Thread? _inputThread;
     private static bool _running;
     private static readonly HighPrecisionLimiter _limiter = new HighPrecisionLimiter();
     private static readonly Stopwatch _sw = Stopwatch.StartNew();
@@ -21,6 +21,8 @@ public static class RealTimeInputEngine
 
     // Accumulated counts and state for the main thread
     private static int _accumulatedPresses = 0;
+    private static readonly long[] _pressTimestampsBuffer = new long[32];
+    private static int _pressTimestampsCount = 0;
     private static bool _anyKeyCurrentlyHeld = false;
     public static long LatestTimestampMs { get; private set; }
 
@@ -115,6 +117,10 @@ public static class RealTimeInputEngine
                     {
                         _accumulatedPresses++;
                         LatestTimestampMs = currentTicks;
+                        if (_pressTimestampsCount < _pressTimestampsBuffer.Length)
+                        {
+                            _pressTimestampsBuffer[_pressTimestampsCount++] = currentTicks;
+                        }
                     }
 
                     _lastRawStates[i] = isDown;
@@ -149,8 +155,28 @@ public static class RealTimeInputEngine
         {
             int count = _accumulatedPresses;
             _accumulatedPresses = 0; // Reset counter for the next frame
+            _pressTimestampsCount = 0; // Reset timestamps too
             return count;
         }
+    }
+
+    // Consumes all raw timestamps since the last check, returning the count.
+    public static int ConsumePressTimestamps(long[] destination)
+    {
+        lock (_lock)
+        {
+            int count = Math.Min(_pressTimestampsCount, destination.Length);
+            Array.Copy(_pressTimestampsBuffer, 0, destination, 0, count);
+            _pressTimestampsCount = 0;
+            _accumulatedPresses = 0; // Reset standard count as well
+            return count;
+        }
+    }
+
+    // Gets the current high-precision stopwatch time reference
+    public static long GetCurrentTimestampMs()
+    {
+        return _sw.ElapsedMilliseconds;
     }
 
     // Called by hold/slider logic to see if any key is currently active

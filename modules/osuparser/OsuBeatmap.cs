@@ -151,6 +151,7 @@ namespace OsuLib
         public void ResolveSliderVelocities()
         {
             // SliderMultiplier lives in [Difficulty]
+            // osu!stable default is 1.4, clamped to [0.4, 3.6]
             double sliderMultiplier = 1.4;
             if (Difficulty.TryGetValue("SliderMultiplier", out var smStr)
                 && double.TryParse(smStr,
@@ -158,7 +159,7 @@ namespace OsuLib
                     System.Globalization.CultureInfo.InvariantCulture,
                     out double sm))
             {
-                sliderMultiplier = sm;
+                sliderMultiplier = Math.Clamp(sm, 0.4, 3.6);
             }
 
             foreach (var obj in HitObjects.OfType<OsuSlider>())
@@ -180,8 +181,17 @@ namespace OsuLib
                 // Duration of ONE pass through the slider path (ms)
                 double singlePassMs = (obj.Length / pixelsPerBeat) * beatLengthMs;
 
-                obj.DurationMs = singlePassMs * obj.Slides;
-                obj.EffectiveVelocityPxPerMs = obj.Length / singlePassMs;
+                // Guard against zero-length sliders that would produce NaN/Infinity
+                if (singlePassMs <= 0 || double.IsNaN(singlePassMs) || double.IsInfinity(singlePassMs))
+                {
+                    obj.DurationMs = 0;
+                    obj.EffectiveVelocityPxPerMs = 0;
+                }
+                else
+                {
+                    obj.DurationMs = singlePassMs * obj.Slides;
+                    obj.EffectiveVelocityPxPerMs = obj.Length / singlePassMs;
+                }
             }
         }
 
@@ -193,6 +203,7 @@ namespace OsuLib
         /// </summary>
         public double GetSliderVelocityAt(double timeMs)
         {
+            // osu!stable default is 1.4, clamped to [0.4, 3.6]
             double sliderMultiplier = 1.4;
             if (Difficulty.TryGetValue("SliderMultiplier", out var smStr)
                 && double.TryParse(smStr,
@@ -200,7 +211,7 @@ namespace OsuLib
                     System.Globalization.CultureInfo.InvariantCulture,
                     out double sm))
             {
-                sliderMultiplier = sm;
+                sliderMultiplier = Math.Clamp(sm, 0.4, 3.6);
             }
 
             var redLine = ControlPoints.TimingPointAt(timeMs);
@@ -298,6 +309,67 @@ namespace OsuLib
 
             string? folder = System.IO.Path.GetDirectoryName(FilePath);
             return folder is null ? string.Empty : System.IO.Path.Combine(folder, bg);
+        }
+
+        /// <summary>
+        /// Returns the video filename as written in the [Events] section,
+        /// or an empty string if no video is defined.
+        /// </summary>
+        public string GetVideo()
+        {
+            // Video event format: Video,offset,"filename" or 1,offset,"filename"
+            foreach (var line in Events)
+            {
+                if (line.StartsWith("//") || line.StartsWith(" ")) continue;
+
+                var parts = line.Split(',');
+                if (parts.Length < 3) continue;
+
+                string type = parts[0].Trim();
+                if (type != "1" && !string.Equals(type, "Video", StringComparison.OrdinalIgnoreCase)) continue;
+
+                // Third token is the filename, possibly wrapped in quotes
+                string filename = parts[2].Trim().Trim('"');
+                if (filename.Length > 0)
+                    return filename;
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Returns the full absolute path to the video file,
+        /// or an empty string if no video is defined or <see cref="FilePath"/> is unknown.
+        /// </summary>
+        public string GetVideoFullPath()
+        {
+            string vid = GetVideo();
+            if (vid.Length == 0 || FilePath.Length == 0) return string.Empty;
+
+            string? folder = System.IO.Path.GetDirectoryName(FilePath);
+            return folder is null ? string.Empty : System.IO.Path.Combine(folder, vid);
+        }
+
+        /// <summary>
+        /// Returns the video start offset in milliseconds.
+        /// Positive = video starts this many ms after audio begins.
+        /// Returns 0 if no video event is found.
+        /// </summary>
+        public double GetVideoOffsetMs()
+        {
+            foreach (var line in Events)
+            {
+                if (line.StartsWith("//") || line.StartsWith(" ")) continue;
+                var parts = line.Split(',');
+                if (parts.Length < 3) continue;
+                string type = parts[0].Trim();
+                if (type != "1" && !string.Equals(type, "Video", StringComparison.OrdinalIgnoreCase)) continue;
+                if (double.TryParse(parts[1].Trim(),
+                        System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out double ms))
+                    return ms;
+            }
+            return 0.0;
         }
 
         public override string ToString() =>

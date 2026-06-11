@@ -11,6 +11,8 @@
   <ItemGroup>
     <PackageReference Include="ManagedBass" Version="4.0.2" />
     <PackageReference Include="ManagedBass.Fx" Version="4.0.2" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23.1" />
+    <PackageReference Include="LibVLCSharp" Version="3.9.7.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +25,9 @@
     <None Update="*.dll;*.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="googlesans.json;googlesans.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
 <!--    <None Update="bass_fx.dll">-->
 <!--      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>-->
 <!--    </None>-->
@@ -32,9 +37,9 @@
 <!--    <None Update="FNA3D.dll">-->
 <!--      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>-->
 <!--    </None>-->
-<!--    <None Update="SDL3.dll">-->
-<!--      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>-->
-<!--    </None>-->
+    <None Update="SDL3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="shaders\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

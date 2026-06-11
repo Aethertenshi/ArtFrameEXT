@@ -32,6 +32,7 @@ namespace ArtFrame.UserInterface
 
         public override void Draw(float dt, Vector2 parentSize, Vector2 parentOrigin)
         {
+            if (skipDraw) return;
             Vector2 resolvedSize = size.Resolve(parentSize);
             Vector2 resolvedPos = position.Resolve(parentSize) + parentOrigin; // offset by parent's top-left
 
@@ -91,6 +92,7 @@ namespace ArtFrame.UserInterface
 
         public override void Draw(float dt, Vector2 parentSize, Vector2 parentOrigin)
         {
+            if (skipDraw) return;
             Vector2 resolvedSize = size.Resolve(parentSize);
             Vector2 resolvedPos = position.Resolve(parentSize);
             Vector2 anchorOffset = GraphicsHelper.GetAnchorOffset(anchorX, anchorY, resolvedSize);
@@ -197,6 +199,7 @@ namespace ArtFrame.UserInterface
 
         public override void Draw(float dt, Vector2 parentSize, Vector2 parentOrigin)
         {
+            if (skipDraw) return;
             Vector2 resolvedPos = position.Resolve(parentSize) + parentOrigin;
             Vector2 resolvedSize = size.Resolve(parentSize);
 
@@ -292,6 +295,13 @@ namespace ArtFrame.UserInterface
 
         public override void Update(float dt)
         {
+            if (skipDraw)
+            {
+                IsHovered = false;
+                IsPressed = false;
+                onUpdate?.Invoke(this);
+                return;
+            }
             bool wasHovered = IsHovered;
             IsHovered = _hitbox.Contains(Math.Clamp(Mouse.Position.X, 0, GraphicsHelper.ScreenWidth), Math.Clamp(Mouse.Position.Y, 0, GraphicsHelper.ScreenHeight));
             IsPressed = IsHovered && Mouse.LeftDown();
@@ -313,6 +323,7 @@ namespace ArtFrame.UserInterface
 
         public override void Draw(float dt, Vector2 parentSize, Vector2 parentOrigin)
         {
+            if (skipDraw) return;
             Vector2 resolvedSize = size.Resolve(parentSize);
             Vector2 resolvedPos = position.Resolve(parentSize) + parentOrigin;
 
@@ -774,6 +785,7 @@ namespace ArtFrame.UserInterface
 
         public override void Update(float dt)
         {
+            if (skipDraw) return;
             onUpdate?.Invoke(this, dt);
 
             if (_hitbox.Contains(Mouse.Position.X, Mouse.Position.Y))
@@ -793,8 +805,8 @@ namespace ArtFrame.UserInterface
             {
                 ScrollOffset = Microsoft.Xna.Framework.MathHelper.Lerp(ScrollOffset, _targetOffset, dt * smoothing);
 
-                // Snap to target when close enough to avoid infinite creep
-                if (Math.Abs(ScrollOffset - _targetOffset) < 0.5f)
+                // Snap to target when close enough to avoid infinite creep and subpixel jitter
+                if (Math.Abs(ScrollOffset - _targetOffset) < 3.0f)
                     ScrollOffset = _targetOffset;
             }
 
@@ -803,6 +815,7 @@ namespace ArtFrame.UserInterface
 
         public override void Draw(float dt, Vector2 parentSize, Vector2 parentOrigin)
         {
+            if (skipDraw) return;
             Vector2 resolvedSize = size.Resolve(parentSize);
             Vector2 resolvedPos = position.Resolve(parentSize) + parentOrigin;
 
@@ -1126,6 +1139,9 @@ namespace ArtFrame.UserInterface
         /// <summary>-1 = unlimited.</summary>
         public int maxLength { get; set; } = -1;
 
+        /// <summary>Mask characters if this is a password field.</summary>
+        public bool isPassword { get; set; } = false;
+
         // ── Text styling ──────────────────────────────────────────────────────
         public string fontName { get; set; } = "";
         public float fontScale { get; set; } = 1f;
@@ -1372,7 +1388,7 @@ namespace ArtFrame.UserInterface
 
             // 3. Text (or placeholder)
             bool showPlaceholder = _currentText.Length == 0 && !isFocused;
-            string displayText = showPlaceholder ? placeholder : _currentText;
+            string displayText = showPlaceholder ? placeholder : (isPassword ? new string('•', _currentText.Length) : _currentText);
             Color displayColor = showPlaceholder ? placeholderColor : textColor;
 
             float textX = topLeft.X + padding;
@@ -1399,7 +1415,7 @@ namespace ArtFrame.UserInterface
                 float cursorX = textX;
                 if (_cursorIndex > 0)
                 {
-                    string textBeforeCursor = _currentText[.._cursorIndex];
+                    string textBeforeCursor = isPassword ? new string('•', _cursorIndex) : _currentText[.._cursorIndex];
                     var (_, beforeSize) = FontHelper.MeasureTextBounds(fontName, textBeforeCursor, fontScale * 10);
                     cursorX += beforeSize.X;
                 }

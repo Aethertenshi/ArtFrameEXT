@@ -30,61 +30,70 @@ namespace ArtFrame
 
         public static int LoadMusic(string musicName, string musicPath)
         {
-            if (!_musics.ContainsKey(musicName))
+            lock (_musics)
             {
-                // 1. Create a DECODING stream (required for BASS_FX)
-                int decoder = Bass.CreateStream(musicPath, 0, 0, BassFlags.Decode);
-
-                if (decoder == 0)
+                if (!_musics.ContainsKey(musicName))
                 {
-                    Console.WriteLine($"Failed to load decoder for {musicName}: {Bass.LastError}");
-                    return 0;
+                    // 1. Create a DECODING stream (required for BASS_FX)
+                    int decoder = Bass.CreateStream(musicPath, 0, 0, BassFlags.Decode);
+
+                    if (decoder == 0)
+                    {
+                        Console.WriteLine($"Failed to load decoder for {musicName}: {Bass.LastError}");
+                        return 0;
+                    }
+
+                    // 2. Create the Tempo stream from the decoder
+                    // BassFlags.FxFreeSource ensures that when we free the tempo stream, the decoder is freed too
+                    int tempoHandle = BassFx.TempoCreate(decoder, BassFlags.FxFreeSource);
+
+                    if (tempoHandle == 0)
+                    {
+                        Console.WriteLine($"Failed to create tempo stream for {musicName}: {Bass.LastError}");
+                        Bass.StreamFree(decoder);
+                        return 0;
+                    }
+
+                    _musics.Add(musicName, tempoHandle);
                 }
-
-                // 2. Create the Tempo stream from the decoder
-                // BassFlags.FxFreeSource ensures that when we free the tempo stream, the decoder is freed too
-                int tempoHandle = BassFx.TempoCreate(decoder, BassFlags.FxFreeSource);
-
-                if (tempoHandle == 0)
-                {
-                    Console.WriteLine($"Failed to create tempo stream for {musicName}: {Bass.LastError}");
-                    Bass.StreamFree(decoder);
-                    return 0;
-                }
-
-                _musics.Add(musicName, tempoHandle);
+                return _musics[musicName];
             }
-            return _musics[musicName];
         }
 
         public static void UnloadAllMusic()
         {
-            foreach (int tempoHandle in _musics.Values)
+            lock (_musics)
             {
-                Bass.StreamFree(tempoHandle);
-            }
+                foreach (int tempoHandle in _musics.Values)
+                {
+                    Bass.StreamFree(tempoHandle);
+                }
 
-            _musics.Clear();
+                _musics.Clear();
+            }
         }
 
         public static bool UnloadMusic(string musicName)
         {
-            if (_musics.TryGetValue(musicName, out int tempoHandle))
+            lock (_musics)
             {
-                // 1. Tell native BASS to completely free the audio buffers from unmanaged RAM.
-                // Because of BassFlags.FxFreeSource, this frees BOTH the tempo stream and the decoder stream.
-                bool freed = Bass.StreamFree(tempoHandle);
-
-                if (!freed)
+                if (_musics.TryGetValue(musicName, out int tempoHandle))
                 {
-                    Console.WriteLine($"Warning: Failed to completely free BASS stream for {musicName}: {Bass.LastError}");
+                    // 1. Tell native BASS to completely free the audio buffers from unmanaged RAM.
+                    // Because of BassFlags.FxFreeSource, this frees BOTH the tempo stream and the decoder stream.
+                    bool freed = Bass.StreamFree(tempoHandle);
+
+                    if (!freed)
+                    {
+                        Console.WriteLine($"Warning: Failed to completely free BASS stream for {musicName}: {Bass.LastError}");
+                    }
+
+                    // 2. Erase the tracking handle from the C# dictionary.
+                    // This ensures the GC can fully reclaim the string key and prevents handle-lookup leaks.
+                    _musics.Remove(musicName);
+
+                    return freed;
                 }
-
-                // 2. Erase the tracking handle from the C# dictionary.
-                // This ensures the GC can fully reclaim the string key and prevents handle-lookup leaks.
-                _musics.Remove(musicName);
-
-                return freed;
             }
 
             Console.WriteLine($"Music '{musicName}' was not found in cache; nothing to unload.");
@@ -111,8 +120,13 @@ namespace ArtFrame
 
         public static void PlayMusic(string musicName, bool restart = true)
         {
-            if (_musics.TryGetValue(musicName, out int handle))
-                Bass.ChannelPlay(handle, restart);
+            int handle;
+            lock (_musics)
+            {
+                if (!_musics.TryGetValue(musicName, out handle))
+                    return;
+            }
+            Bass.ChannelPlay(handle, restart);
         }
 
         public static void PlaySFX(string soundName)
@@ -142,53 +156,74 @@ namespace ArtFrame
 
         public static void PauseMusic(string musicName)
         {
-            if (_musics.TryGetValue(musicName, out int handle))
-                Bass.ChannelPause(handle);
+            int handle;
+            lock (_musics)
+            {
+                if (!_musics.TryGetValue(musicName, out handle))
+                    return;
+            }
+            Bass.ChannelPause(handle);
         }
 
         public static bool IsMusicPlaying(string musicName)
         {
-            if (_musics.TryGetValue(musicName, out int handle))
+            int handle;
+            lock (_musics)
             {
-                return Bass.ChannelIsActive(handle) == PlaybackState.Playing;
+                if (!_musics.TryGetValue(musicName, out handle))
+                    return false;
             }
-            return false;
+            return Bass.ChannelIsActive(handle) == PlaybackState.Playing;
         }
 
         public static void StopMusic(string musicName)
         {
-            if (_musics.TryGetValue(musicName, out int handle))
-                Bass.ChannelStop(handle);
+            int handle;
+            lock (_musics)
+            {
+                if (!_musics.TryGetValue(musicName, out handle))
+                    return;
+            }
+            Bass.ChannelStop(handle);
         }
 
         public static void SetMusicVolume(string musicName, float volume)
         {
-            if (_musics.TryGetValue(musicName, out int handle))
-                Bass.ChannelSetAttribute(handle, ChannelAttribute.Volume, volume);
+            int handle;
+            lock (_musics)
+            {
+                if (!_musics.TryGetValue(musicName, out handle))
+                    return;
+            }
+            Bass.ChannelSetAttribute(handle, ChannelAttribute.Volume, volume);
         }
 
         public static void SetMusicSpeed(string musicName, float speedMultiplier, bool adjustPitch = false)
         {
-            if (_musics.TryGetValue(musicName, out int handle))
+            int handle;
+            lock (_musics)
             {
-                // 1. Double Time / Half Time: Calculate Tempo percentage difference
-                // A multiplier of 1.5x means a +50% tempo increase.
-                float tempoPercent = (speedMultiplier - 1.0f) * 100f;
-                Bass.ChannelSetAttribute(handle, ChannelAttribute.Tempo, tempoPercent);
+                if (!_musics.TryGetValue(musicName, out handle))
+                    return;
+            }
 
-                // 2. Adjust Pitch (Nightcore style)
-                if (adjustPitch)
-                {
-                    // Calculate how many semitones to shift to match the speed multiplier
-                    // Formula: 12 * log2(multiplier)
-                    float semitones = 12f * MathF.Log2(speedMultiplier);
-                    Bass.ChannelSetAttribute(handle, ChannelAttribute.Pitch, semitones);
-                }
-                else
-                {
-                    // Lock pitch back to its original key
-                    Bass.ChannelSetAttribute(handle, ChannelAttribute.Pitch, 0f);
-                }
+            // 1. Double Time / Half Time: Calculate Tempo percentage difference
+            // A multiplier of 1.5x means a +50% tempo increase.
+            float tempoPercent = (speedMultiplier - 1.0f) * 100f;
+            Bass.ChannelSetAttribute(handle, ChannelAttribute.Tempo, tempoPercent);
+
+            // 2. Adjust Pitch (Nightcore style)
+            if (adjustPitch)
+            {
+                // Calculate how many semitones to shift to match the speed multiplier
+                // Formula: 12 * log2(multiplier)
+                float semitones = 12f * MathF.Log2(speedMultiplier);
+                Bass.ChannelSetAttribute(handle, ChannelAttribute.Pitch, semitones);
+            }
+            else
+            {
+                // Lock pitch back to its original key
+                Bass.ChannelSetAttribute(handle, ChannelAttribute.Pitch, 0f);
             }
         }
 

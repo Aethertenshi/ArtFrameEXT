@@ -19,6 +19,13 @@ namespace OsuLib
         private const int COMBO_SKIP    = 0b0111_0000; // bits 4-6 → how many colours to skip
         private const int TYPE_HOLD     = 1 << 7;   // 128  (osu!mania only)
 
+        /// <summary>
+        /// An offset which needs to be applied to old beatmaps (v4 and lower)
+        /// to correct timing changes that were applied at a game client level.
+        /// Matches <c>LegacyBeatmapDecoder.EARLY_VERSION_TIMING_OFFSET</c>.
+        /// </summary>
+        private const int EARLY_VERSION_TIMING_OFFSET = 24;
+
         // ── Public API ───────────────────────────────────────────────────────────
 
         /// <summary>
@@ -59,6 +66,10 @@ namespace OsuLib
                     beatmap.FormatVersion = ver;
             }
 
+            // osu!stable applies a +24ms offset for format versions ≤ 4.
+            // See: LegacyBeatmapDecoder.EARLY_VERSION_TIMING_OFFSET
+            double offset = beatmap.FormatVersion < 5 ? EARLY_VERSION_TIMING_OFFSET : 0;
+
             string currentSection = "";
 
             for (int i = 1; i < lines.Length; i++)
@@ -96,7 +107,7 @@ namespace OsuLib
                         break;
 
                     case "TimingPoints":
-                        var tp = ParseTimingPoint(line);
+                        var tp = ParseTimingPoint(line, offset);
                         if (tp != null)
                         {
                             beatmap.TimingPoints.Add(tp);
@@ -124,7 +135,7 @@ namespace OsuLib
                                 beatmap.ControlPoints.DifficultyPoints.Add(new ArtFrame.RythmModule.DifficultyControlPoint
                                 {
                                     Time = tp.Time,
-                                    SpeedMultiplier = -100.0 / tp.BeatLength
+                                    SpeedMultiplier = tp.VelocityMultiplier
                                 });
                             }
 
@@ -148,7 +159,7 @@ namespace OsuLib
                         break;
 
                     case "HitObjects":
-                        var obj = ParseHitObject(line);
+                        var obj = ParseHitObject(line, offset);
                         if (obj != null) beatmap.HitObjects.Add(obj);
                         break;
                 }
@@ -194,7 +205,7 @@ namespace OsuLib
 
         // ── TimingPoints ─────────────────────────────────────────────────────────
 
-        private static OsuTimingPoint? ParseTimingPoint(string line)
+        private static OsuTimingPoint? ParseTimingPoint(string line, double offset)
         {
             // time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
             var parts = line.Split(',');
@@ -202,7 +213,11 @@ namespace OsuLib
 
             var tp = new OsuTimingPoint();
 
-            if (TryParseDouble(parts, 0, out double t))   tp.Time       = t;
+            // osu!stable truncates timing point time to int.
+            // We apply the format-version offset here.
+            if (TryParseDouble(parts, 0, out double t))
+                tp.Time = Math.Floor(t) + offset;
+
             if (TryParseDouble(parts, 1, out double bl))  tp.BeatLength = bl;
             if (TryParseInt(parts, 2, out int meter))     tp.Meter      = meter;
             if (TryParseInt(parts, 3, out int ss))        tp.SampleSet  = ss;
@@ -211,12 +226,36 @@ namespace OsuLib
             if (TryParseInt(parts, 6, out int uninh))     tp.IsUninherited = uninh == 1;
             if (TryParseInt(parts, 7, out int fx))        tp.Effects    = fx;
 
+            // ── osu!stable clamping for inherited (green) lines ──────────────────
+            // In osu!stable, the beatLength field for inherited points is clamped
+            // to [-1000, -10], producing a velocity multiplier range of [0.1, 10.0].
+            // Uninherited (red) points clamp beatLength to [6, 60000] (≈1–10000 BPM).
+            if (tp.IsUninherited)
+            {
+                tp.BeatLength = Math.Clamp(tp.BeatLength, 6.0, 60000.0);
+            }
+            else
+            {
+                // For legacy files (v4 and below) that don't have the uninherited flag,
+                // a positive beatLength still means it's a timing point.
+                // But if explicitly inherited, clamp to the expected negative range.
+                if (tp.BeatLength >= 0)
+                {
+                    // Some old maps have positive beatLength on green lines; treat as 1× velocity.
+                    tp.BeatLength = -100.0;
+                }
+                else
+                {
+                    tp.BeatLength = Math.Clamp(tp.BeatLength, -1000.0, -10.0);
+                }
+            }
+
             return tp;
         }
 
         // ── HitObjects ───────────────────────────────────────────────────────────
 
-        private static OsuHitObject? ParseHitObject(string line)
+        private static OsuHitObject? ParseHitObject(string line, double offset)
         {
             // Minimum: x,y,time,type,hitSound
             var parts = line.Split(',');
@@ -227,6 +266,10 @@ namespace OsuLib
             if (!TryParseInt(parts, 2, out int time)) return null;
             if (!TryParseInt(parts, 3, out int type)) return null;
             if (!TryParseInt(parts, 4, out int hs))   return null;
+
+            // Apply the format-version offset to the hit object time.
+            double startTime = time + offset;
+            int adjustedTime = (int)Math.Round(startTime);
 
             bool isNewCombo  = (type & TYPE_NEWCOMBO) != 0;
             int  comboSkip   = (type & COMBO_SKIP) >> 4;
@@ -239,17 +282,20 @@ namespace OsuLib
             }
             else if ((type & TYPE_SPINNER) != 0)
             {
-                // Spinners: just use OsuNote with Spinner type for now
-                var spinner = new OsuNote { ObjectType = HitObjectType.Spinner };
-                obj = spinner;
+                // Spinners: endTime is at parts[5], hitSample at parts[6]
+                obj = ParseSpinner(parts, 5, startTime, offset);
             }
             else if ((type & TYPE_HOLD) != 0)
             {
-                obj = ParseHold(parts, 5);
+                obj = ParseHold(parts, 5, startTime, offset);
             }
             else if ((type & TYPE_CIRCLE) != 0)
             {
-                obj = new OsuNote();
+                var note = new OsuNote();
+                // Circle hitSample is at parts[5]
+                if (parts.Length > 5)
+                    note.HitSample = parts[5].Trim();
+                obj = note;
             }
             else
             {
@@ -258,17 +304,33 @@ namespace OsuLib
 
             obj.X          = x;
             obj.Y          = y;
-            obj.Time       = time;
+            obj.Time       = adjustedTime;
             obj.TypeRaw    = type;
             obj.HitSound   = hs;
             obj.IsNewCombo = isNewCombo;
             obj.ComboSkip  = comboSkip;
 
-            // ParseHold stashed the absolute end time in DurationMs; convert to a real duration now that Time is set.
-            if ((type & TYPE_HOLD) != 0 && obj is OsuSlider hold)
-                hold.DurationMs = Math.Max(0, hold.DurationMs - time);
-
             return obj;
+        }
+
+        // ── Spinner parsing ──────────────────────────────────────────────────────
+        // Format: x,y,time,type,hitSound,endTime,hitSample
+        // Official: duration = Math.Max(0, endTime + offset - startTime)
+        private static OsuNote ParseSpinner(string[] parts, int paramsIdx, double startTime, double offset)
+        {
+            var spinner = new OsuNote { ObjectType = HitObjectType.Spinner };
+
+            if (paramsIdx < parts.Length && TryParseDouble(parts, paramsIdx, out double endTime))
+            {
+                // osu!stable: duration = max(0, endTime + offset - startTime)
+                // startTime already includes offset, so: duration = max(0, (endTime + offset) - startTime)
+                spinner.DurationMs = Math.Max(0, (endTime + offset) - startTime);
+            }
+
+            if (paramsIdx + 1 < parts.Length)
+                spinner.HitSample = parts[paramsIdx + 1].Trim();
+
+            return spinner;
         }
 
         // objectParams for slider start at parts[5]
@@ -302,13 +364,17 @@ namespace OsuLib
                 }
             }
 
-            // --- slides ---
+            // --- slides (span count) ---
+            // osu!stable: this value is called "repeat" but it's actually the total span count.
+            // The official parser does repeatCount = Math.Max(0, value - 1) to get the
+            // number of repeats, then uses repeatCount + 1 for total spans.
+            // We store it as Slides which is the total span count from the file.
             if (TryParseInt(parts, paramsIdx + 1, out int slides))
-                s.Slides = slides;
+                s.Slides = Math.Max(1, slides);
 
-            // --- length ---
+            // --- length (pixel length of one span) ---
             if (TryParseDouble(parts, paramsIdx + 2, out double len))
-                s.Length = len;
+                s.Length = Math.Max(0, len);
 
             // --- edge sounds ---
             if (paramsIdx + 3 < parts.Length && parts[paramsIdx + 3].Trim().Length > 0)
@@ -332,14 +398,34 @@ namespace OsuLib
         }
 
         // osu!mania hold: endTime:hitSample at params position
-        private static OsuSlider ParseHold(string[] parts, int paramsIdx)
+        // Official: endTime = Math.Max(startTime, ParseDouble(ss[0])); duration = endTime + offset - startTime
+        private static OsuSlider ParseHold(string[] parts, int paramsIdx, double startTime, double offset)
         {
             var s = new OsuSlider { ObjectType = HitObjectType.Hold };
             if (paramsIdx >= parts.Length) return s;
 
-            var holdParams = parts[paramsIdx].Split(':');
-            if (TryParseDouble(holdParams, 0, out double endTime))
-                s.DurationMs = endTime; // temporarily store end time; will be fixed below
+            string paramStr = parts[paramsIdx];
+
+            if (!string.IsNullOrEmpty(paramStr))
+            {
+                var holdParams = paramStr.Split(':');
+
+                if (TryParseDouble(holdParams, 0, out double endTime))
+                {
+                    // osu!stable: endTime = max(startTime, endTime)
+                    // duration = endTime + offset - startTime
+                    // startTime already includes offset, so: duration = (endTime + offset) - startTime
+                    endTime = Math.Max(startTime, endTime + offset);
+                    s.DurationMs = endTime - startTime;
+                }
+
+                // Remaining parts after endTime are the sample bank info (colon-separated)
+                // We don't parse sample banks deeply but store the raw string if present
+                if (holdParams.Length > 1)
+                {
+                    s.HitSample = string.Join(':', holdParams, 1, holdParams.Length - 1);
+                }
+            }
 
             s.Slides = 1;
             return s;

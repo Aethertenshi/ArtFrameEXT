@@ -1,3 +1,4 @@
+using ArtFrame.Easings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static ArtFrame.EffectsHelper;
@@ -25,6 +26,8 @@ namespace ArtFrame
         public ArtTypes.UDim2 size { get; set; }
         public ArtTypes.AnchorX anchorX { get; set; }
         public ArtTypes.AnchorY anchorY { get; set; }
+        public bool skipDraw { get; set; } = false;
+        public int LayoutOrder { get; set; } = 0;
 
         public virtual void Draw(float dt, ArtTypes.Vector2 parentSize, ArtTypes.Vector2 parentOrigin) { }
         public virtual void Update(float dt) { }
@@ -61,11 +64,11 @@ namespace ArtFrame
     internal class Art : Game
     {
         // Internal References
-        internal static Art Instance { get; private set; }
+        internal static Art Instance { get; private set; } = null!;
         internal GraphicsDeviceManager graphics { get; private set; }
-        internal SpriteBatch spriteBatch { get; private set; }
-        internal GraphicsDevice graphicsDevice { get; private set; }
-        internal GraphicsAdapter graphicsAdapter { get; private set; }
+        internal SpriteBatch spriteBatch { get; private set; } = null!;
+        internal GraphicsDevice graphicsDevice { get; private set; } = null!;
+        internal GraphicsAdapter graphicsAdapter { get; private set; } = null!;
         internal Texture2D? pixel { get; private set; } = null;
         internal HighPrecisionLimiter _precisionLimiter = new HighPrecisionLimiter();
 
@@ -88,10 +91,6 @@ namespace ArtFrame
         private float _counterElapsed = 0f;
         private float _currentFps = 0f;
         private float _currentUps = 0f;
-
-        // Draw Suppression Timing
-        private System.Reflection.FieldInfo? _accumulatorField;
-        private double _drawAccumulator = 0.0;
 
         // Text Input
         private int _textInputRefCount = 0;
@@ -141,6 +140,7 @@ namespace ArtFrame
             
             // Loading Basic Effects
             SetupEffects();
+            FontHelper.LoadAtlasFont("gsans", "googlesans.json", "googlesans.png");
 
             RealTimeInputEngine.Start();
 
@@ -173,22 +173,34 @@ namespace ArtFrame
             // Object Pool Update
             if (SpriteHelper.objectPool.Count > 0)
             {
-                foreach (var obj in SpriteHelper.objectPool)
+                for (int i = 0; i < SpriteHelper.objectPool.Count; i++)
+                {
+                    ArtObject obj = SpriteHelper.objectPool[i];
+                    if (obj==null) continue;
                     obj.Update(dt);
+                }
             }
 
             // Helper Pool Update
             if (RythmHelper.helperPool.Count > 0)
             {
-                foreach (var helper in RythmHelper.helperPool)
-                    helper?.Update(dt);
+                for (int i = 0; i < RythmHelper.helperPool.Count; i++)
+                {
+                    IArtHelper helper = RythmHelper.helperPool[i];
+                    if (helper==null) continue;
+                    helper.Update(dt);
+                }
             }
 
             // Tween Pool Update
             if (TweenHelper.tweenPool.Count > 0)
             {
-                foreach (var tween in TweenHelper.tweenPool)
+                for (int i = 0; i < TweenHelper.tweenPool.Count; i++)
+                {
+                    Tweener tween = TweenHelper.tweenPool[i];
+                    if (tween==null) continue;
                     tween.Update(dt);
+                }
             }
 
             // 3. Game Logic Execution
@@ -227,8 +239,13 @@ namespace ArtFrame
 
                 if (SpriteHelper.objectPool.Count > 0)
                 {
-                    foreach (var obj in SpriteHelper.objectPool)
-                        obj.Draw(dt, new ArtTypes.Vector2(GraphicsHelper.ScreenWidth, GraphicsHelper.ScreenHeight), Vector2.Zero);
+                    for (int i = 0; i < SpriteHelper.objectPool.Count; i++)
+                    {
+                        ArtObject aobj = SpriteHelper.objectPool[i];
+                        if (aobj==null) continue;
+                        if (aobj.skipDraw) continue;
+                        aobj.Draw(dt, new ArtTypes.Vector2(GraphicsHelper.ScreenWidth, GraphicsHelper.ScreenHeight), Vector2.Zero);
+                    }
                 }
 
                 art.ManualDraw(dt);
@@ -236,17 +253,19 @@ namespace ArtFrame
                 // Helper Pool Update
                 if (RythmHelper.helperPool.Count > 0)
                 {
-                    foreach (var helper in RythmHelper.helperPool)
-                        helper.Draw(dt);
+                    for (int i = 0; i < RythmHelper.helperPool.Count; i++)
+                    {
+                        IArtHelper artHelper = RythmHelper.helperPool[i];
+                        if (artHelper==null) continue;
+                        artHelper.Draw(dt);
+                    }
                 }
 
                 // If performance telemetry is enabled, draw the graphs
                 if (GraphicsHelper.ShowPerformanceTelemetry)
                 {
                     DrawPerformanceGraph();
-                }
-                else
-                {
+                    
                     // Draw FPS / Polling Rate Counter in the bottom-left
                     string counterText = $"FPS: {_currentFps:0} | Logic: {_currentUps:0} | Input: {RealTimeInputEngine.CurrentHz:0}Hz";
                     FontHelper.DrawTextPro(
